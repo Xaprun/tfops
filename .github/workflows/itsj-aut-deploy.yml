@@ -63,6 +63,7 @@ jobs:
           else
             echo "Blob Container już istnieje."
           fi
+
       - name: Sprawdzenie istnienia Blob Container dla STAN
         run: |
           export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
@@ -97,23 +98,6 @@ jobs:
 
       - name: Ustawienie backendu Terraform (Azure Blob Storage)
         run: |
-          cat > backend2.tf <<EOF
-          terraform {
-            backend "azurerm" {
-              resource_group_name   = "$TF_STATE_RESOURCE_GROUP"
-              storage_account_name  = "$TF_STORAGE_ACCOUNT_NAME"
-              container_name        = "$TF_CONTAINER_NAME"
-              key                   = "$TF_STATE_KEY"
-            }
-          }
-          EOF
-        shell: bash
-
-      - name: Sprawdzenie katalogu
-        run: cat backend2.tf
-
-      - name: Ustawienie backendu Terraform (Azure Blob Storage)
-        run: |
           cat > backend.tf <<-EOF
           terraform {
             backend "azurerm" {
@@ -132,8 +116,25 @@ jobs:
       - name: Sprawdzenie katalogu
         run: pwd && ls -al
 
+      - name: Check if state file exists
+        id: check_state
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+          EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
+            --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+      
       - name: Initialize Terraform with Backend
-        run: terraform init -reconfigure
+        run: |
+          if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
+            echo "State file exists. Running 'terraform init -reconfigure'."
+            terraform init -reconfigure
+          else
+            echo "State file does not exist. Running 'terraform init'."
+            terraform init
+          fi
+
 
       - name: Terraform Plan (Save to File)
         run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"
