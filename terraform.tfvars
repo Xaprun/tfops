@@ -1,5 +1,5 @@
 aks_cluster_name = "my-aks-cluster"
-location = "East Europe"
+location = "West Europe"
 resource_group_name = "my-resource-group"
 
 # Pula domyślna (System)
