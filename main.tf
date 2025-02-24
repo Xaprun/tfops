@@ -1,5 +1,10 @@
 provider "azurerm" {
   features {}
+  
+  client_id       =  ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}.clientId
+  client_secret   =  ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}.clientSecret
+  subscription_id =  ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}.subscriptionId
+  tenant_id       =  ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}.tenantId
 }
 
 module "aks_spot" {
