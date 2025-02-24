@@ -66,3 +66,10 @@ variable "additional_pool_max_count" {
   type        = number
   default     = 5
 }
+
+variable "azure_credentials" {
+  description = "Zakodowane w Base64 dane uwierzytelniające Azure (Service Principal)"
+  type        = string
+  sensitive   = true
+}
+
