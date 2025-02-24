@@ -53,6 +53,7 @@ jobs:
             echo "Storage Account już istnieje."
           fi
 
+
       - name: Sprawdzenie istnienia Blob Container
         run: |
           export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
@@ -87,7 +88,24 @@ jobs:
 
       - name: Ustawienie backendu Terraform (Azure Blob Storage)
         run: |
-          cat > backend.tf <<EOF
+          cat > backend2.tf <<EOF
+          terraform {
+            backend "azurerm" {
+              resource_group_name   = "$TF_STATE_RESOURCE_GROUP"
+              storage_account_name  = "$TF_STORAGE_ACCOUNT_NAME"
+              container_name        = "$TF_CONTAINER_NAME"
+              key                   = "$TF_STATE_KEY"
+            }
+          }
+          EOF
+        shell: bash
+
+      - name: Sprawdzenie katalogu
+        run: cat backend2.tf
+
+      - name: Ustawienie backendu Terraform (Azure Blob Storage)
+        run: |
+          cat > backend.tf <<-EOF
           terraform {
             backend "azurerm" {
               resource_group_name   = "$TF_STATE_RESOURCE_GROUP"
@@ -99,6 +117,9 @@ jobs:
           EOF
         shell: bash
         
+      - name: Sprawdzenie katalogu
+        run: cat backend.tf
+
       - name: Sprawdzenie katalogu
         run: pwd && ls -al
 
