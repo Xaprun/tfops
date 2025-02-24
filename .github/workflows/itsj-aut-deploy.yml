@@ -13,7 +13,7 @@ env:
   TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
 
   # Parametry Storage Account dla Terraform State
-  TF_STORAGE_ACCOUNT_NAME: "terraformstatestorage"
+  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
   TF_CONTAINER_NAME: "tfstate"
   TF_PLAN_CONTAINER_NAME: "tfplan"
   TF_STATE_KEY: "terraform.tfstate"
