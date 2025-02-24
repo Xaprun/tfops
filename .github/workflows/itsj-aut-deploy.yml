@@ -142,6 +142,23 @@ jobs:
         # run: terraform  apply -auto-approve -var-file="terraform.tfvars"
         run: terraform apply -auto-approve "plan.tfplan"   # (with saved plan)
 
+      - name: Sprawdzenie katalogu czy statefile istnieje
+        run: pwd && ls -al
+
+      - name: Upload State to Azure Blob Storage
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+          az storage blob upload \
+            --container-name "$TF_CONTAINER_NAME" \
+            --file "$TF_STATE_KEY" \
+            --name "$TF_STATE_KEY-$(date +%Y%m%d-%H%M%S)" \
+            --overwrite
+          az storage blob upload \
+            --container-name "$TF_CONTAINER_NAME" \
+            --file "$TF_STATE_KEY" \
+            --name "$TF_STATE_KEY" \
+            --overwrite
+
   # terraform-deploy-state:
   #   name: Terraform Apply
   #   runs-on: ubuntu-latest
