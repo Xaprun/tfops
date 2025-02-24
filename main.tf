@@ -1,7 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
 module "aks_spot" {
   source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot"
 
