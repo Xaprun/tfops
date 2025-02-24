@@ -98,6 +98,9 @@ jobs:
           }
           EOF
         shell: bash
+        
+      - name: Sprawdzenie katalogu
+        run: pwd && ls -al
 
       - name: Initialize Terraform with Backend
         run: terraform init -reconfigure
