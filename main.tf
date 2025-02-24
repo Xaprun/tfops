@@ -5,16 +5,16 @@ provider "azurerm" {
 module "aks_spot" {
   source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot"
 
-  aks_cluster_name          = "my-aks-cluster"
-  location                  = "West Europe"
-  resource_group_name       = "my-resource-group"
-  node_count                = 1
-  node_vm_size              = "Standard_DS2_v2"
-  enable_additional_pool    = false
-  additional_pool_mode      = "Spot"
-  additional_pool_name      = "spotpool"
-  additional_pool_vm_size   = "Standard_DS2_v2"
-  additional_pool_node_count = 2
-  additional_pool_min_count  = 1
-  additional_pool_max_count  = 5
+  aks_cluster_name          = var.aks_cluster_name
+  location                  = var.location
+  resource_group_name       = var.resource_group_name
+  node_count                = var.node_count
+  node_vm_size              = var.node_vm_size
+  enable_additional_pool    = var.enable_additional_pool
+  additional_pool_mode      = var.additional_pool_mode
+  additional_pool_name      = var.additional_pool_name
+  additional_pool_vm_size   = var.additional_pool_vm_size
+  additional_pool_node_count = var.additional_pool_node_count
+  additional_pool_min_count  = var.additional_pool_min_count
+  additional_pool_max_count  = var.additional_pool_max_count
 }
