@@ -2,6 +2,9 @@ name: Destroy AKS Cluster with Terraform
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - my-artificial-client-01
 
 env:
   ARM_CLIENT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
