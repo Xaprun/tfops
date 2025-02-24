@@ -140,7 +140,7 @@ jobs:
 
       - name: Terraform Apply
         # run: terraform  apply -auto-approve -var-file="terraform.tfvars"
-        run: terraform apply -auto-approve "plan.tfplan" -var-file="terraform.tfvars"  # (with saved plan)
+        run: terraform apply -auto-approve "plan.tfplan"   # (with saved plan)
 
   # terraform-deploy-state:
   #   name: Terraform Apply
