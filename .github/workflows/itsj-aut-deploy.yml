@@ -13,6 +13,8 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
   ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
+
 
 jobs:
   terraform:
