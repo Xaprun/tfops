@@ -34,22 +34,10 @@ jobs:
           creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform -chdir=./terraform init
 
       - name: Terraform Plan
-        run: terraform plan \
-          -var="aks_cluster_name=my-aks-cluster" \
-          -var="location=East Europe" \
-          -var="resource_group_name=my-resource-group" \
-          -var="enable_additional_pool=true" \
-          -var="additional_pool_mode=Spot" \
-          -var="additional_pool_node_count=2"
+        run: terraform -chdir=./terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve \
-          -var="aks_cluster_name=my-aks-cluster" \
-          -var="location=East Europe" \
-          -var="resource_group_name=my-resource-group" \
-          -var="enable_additional_pool=true" \
-          -var="additional_pool_mode=Spot" \
-          -var="additional_pool_node_count=2"
+        run: terraform -chdir=./terraform apply -auto-approve -var-file="terraform.tfvars"
