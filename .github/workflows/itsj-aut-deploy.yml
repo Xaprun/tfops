@@ -112,7 +112,8 @@ jobs:
   terraform-deploy-state:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    needs: prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-storage'
+    needs: terraform-deploy # prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-storage'
+    
 
     steps:
       - name: Checkout Code
