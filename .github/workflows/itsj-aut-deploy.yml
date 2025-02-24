@@ -127,7 +127,7 @@ jobs:
 
       - name: Terraform Plan 
         # run: terraform plan -var-file="terraform.tfvars"
-        run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"      #  (Save to File)
+        run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"      #  (Save to File) tfvars usd to plan
 
       - name: Upload Plan to Azure Blob Storage
         run: |
