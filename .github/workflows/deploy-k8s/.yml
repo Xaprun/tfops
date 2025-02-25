@@ -32,3 +32,4 @@ runs:
 
     - name: Test Kubernetes Manifest
       run: kubectl get pod -n default
+
