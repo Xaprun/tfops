@@ -1,0 +1,72 @@
+name: Destroy AKS Cluster with Terraform and Update State
+
+on:
+  push:
+    branches:
+      - my-artificial-client-03
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  
+  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
+  TF_CONTAINER_NAME: "tfstate"
+  TF_STATE_KEY: "terraform.tfstate"
+  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
+  TF_STATE_REGION: "westeurope"
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy and Update State
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+      - name: Check if state file exists
+        id: check_state
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+          EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
+            --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+      
+      - name: Initialize Terraform with Backend
+        run: |
+          if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
+            echo "State file exists. Running 'terraform init -reconfigure'."
+            terraform init -reconfigure \
+              -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
+              -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+              -backend-config="container_name=$TF_CONTAINER_NAME" \
+              -backend-config="key=$TF_STATE_KEY"
+          else
+            echo "State file does not exist. Running 'terraform init'."
+            terraform init
+          fi
+
+      - name: Terraform Plan Destroy
+        run: terraform plan -destroy -out=destroy.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
+
+      - name: Review Destroy Plan
+        run: terraform show destroy.tfplan
+
+      - name: Terraform Destroy
+        run: terraform apply -auto-approve "destroy.tfplan"
+
+      - name: Sprawdzenie katalogu czy statefile istnieje
+        run: pwd && ls -al
