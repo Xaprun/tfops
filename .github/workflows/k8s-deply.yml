@@ -155,9 +155,9 @@ jobs:
         run: az aks install-cli
 
       - name: Get AKS Credentials
-        run: |
+        run: az aks get-credentials --name my-aks-cluster --overwrite-existing --resource-group my-aks-cluster
         # az aks get-credentials --name $AKS_CLUSTER_NAME --overwrite-existing --resource-group $AKS_RESOURCE_GROUP 
-        az aks get-credentials --name my-aks-cluster --overwrite-existing --resource-group my-aks-cluster
+         
 
       - name: Deploy Kubernetes Manifest
         run: kubectl get nodes
