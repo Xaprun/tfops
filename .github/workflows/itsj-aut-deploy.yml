@@ -25,11 +25,11 @@ jobs:
     name: Prepare Azure Storage
     runs-on: ubuntu-latest
 
-  steps:
-      - name: Temp task - Debuging 
-        run: |
-          echo $ARM_CLIENT_ID
-          echo ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+    steps:
+        - name: Temp task - Debuging 
+          run: |
+            echo $ARM_CLIENT_ID
+            echo ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
   # ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
   # ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
