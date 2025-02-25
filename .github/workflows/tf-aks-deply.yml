@@ -3,7 +3,7 @@ name: Deploy AKS Cluster with Terraform and Storage Check
 on:
   push:
     branches:
-      - my-artificial-client-02
+      - my-artificial-client-03
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -143,7 +143,7 @@ jobs:
     needs: terraform-deploy
     steps:
       - name: Deploy using composite action
-        uses: ./.github/actions/deploy-k8s.yml
+        uses: ./.github/actions/deploy-k8s
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
