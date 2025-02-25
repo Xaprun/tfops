@@ -8,32 +8,32 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pyapp-backend
+  name: pyapp-frontend
   namespace: dev
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: pyapp
-      module: backend
+      module: frontend
   template:
     metadata:
       labels:
         app: pyapp
-        module: backend
+        module: frontend
     spec:
-      name: pyapp-bck
       imagePullSecrets:
         - name: ghcr-secret
       containers:
-        - name: pyapp-bck-ctr
-          image: ghcr.io/xaprun/ajpyapp-backend:0.2
+        - name: pyapp-frnt-ctr
+          image: ghcr.io/xaprun/ajpyapp-frontend:0.3
           ports:
             - containerPort: 8080
           imagePullPolicy: Always
-        - env:
-          - name: TRACE_ENDPOINT
-            value: trace-service:4317
+          env:
+            - name: TRACE_ENDPOINT
+              value: trace-service:4317
+
 ---
 apiVersion: v1
 kind: Service
@@ -66,7 +66,6 @@ spec:
         app: pyapp
         module: frontend
     spec:
-      name: pyapp-frnt
       imagePullSecrets:
         - name: ghcr-secret
       containers:
@@ -75,10 +74,10 @@ spec:
           ports:
             - containerPort: 8080
           imagePullPolicy: Always
-          spec:
-        - env:
-          - name: TRACE_ENDPOINT
-            value: trace-service:4317
+          env:
+            - name: TRACE_ENDPOINT
+              value: trace-service:4317
+
 ---
 apiVersion: v1
 kind: Service
