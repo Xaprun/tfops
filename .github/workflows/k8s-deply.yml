@@ -152,15 +152,12 @@ jobs:
           creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
       - name: Set up Kubectl
-        run: |
-          az aks install-cli
+        run: az aks install-cli
 
       - name: Get AKS Credentials
-        run: |
-          # Zastąp <AKS_RESOURCE_GROUP> i <AKS_CLUSTER_NAME> odpowiednimi wartościami
-          az aks get-credentials --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --overwrite-existing
+        run: az aks get-credentials --name $AKS_CLUSTER_NAME --overwrite-existing --resource-group $AKS_RESOURCE_GROUP 
+        # az aks get-credentials --name MyManagedCluster --overwrite-existing --resource-group MyResourceGroup
 
       - name: Deploy Kubernetes Manifest
-        run: |
-          kubectl get nodes
+        run: kubectl get nodes
           # kubectl apply -f k8s-manifest.yaml
