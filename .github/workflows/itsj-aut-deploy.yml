@@ -19,23 +19,19 @@ jobs:
     steps:
       - name: Set Azure Credentials
         run: |
-          echo AZ_CREDS_B64 | base64 --decode > secret.json
-          export ARM_CLIENT_ID=$(jq -r .clientId secret.json)
-          export ARM_CLIENT_SECRET=$(jq -r .clientSecret secret.json)
-          export ARM_TENANT_ID=$(jq -r .tenantId secret.json)
-          export ARM_SUBSCRIPTION_ID=$(jq -r .subscriptionId secret.json)
+          export ARM_CLIENT_ID = $(jq -r .clientId $(secrets.CREDENTIALS_AZURE_ITSAJ_AUT))
       
-      - name: Temp task - Debuging 
-        run: |
-          cat secret.json
-          touch test.txt
-          echo "oto zmienne:" >> test.txt
-          echo $ARM_CLIENT_ID >> test.txt
-          echo $ARM_CLIENT_SECRET >> test.txt
-          echo $ARM_SUBSCRIPTION_ID >> test.txt
-          echo $ARM_TENANT_ID >> test.txt
-          echo $TF_VAR_azure_credentials >> test.txt
-          cat test.txt
+      # - name: Temp task - Debuging 
+      #   run: |
+      #     cat secret.json
+      #     touch test.txt
+      #     echo "oto zmienne:" >> test.txt
+      #     echo $ARM_CLIENT_ID >> test.txt
+      #     echo $ARM_CLIENT_SECRET >> test.txt
+      #     echo $ARM_SUBSCRIPTION_ID >> test.txt
+      #     echo $ARM_TENANT_ID >> test.txt
+      #     echo $TF_VAR_azure_credentials >> test.txt
+      #     cat test.txt
 
   
   #     - name: Login to Azure
