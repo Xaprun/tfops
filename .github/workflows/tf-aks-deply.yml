@@ -143,7 +143,7 @@ jobs:
     needs: terraform-deploy
     steps:
       - name: Deploy using composite action
-        uses: ./.github/actions/deploy-k8s
+        uses: ./.github/workflows/deploy-k8s
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
