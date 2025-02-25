@@ -3,7 +3,7 @@ name: Deploy AKS Cluster with Terraform and Storage Check
 on:
   push:
     branches:
-      - my-artificial-client-02
+      - my-artificial-client-03
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
