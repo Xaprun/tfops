@@ -25,79 +25,26 @@ jobs:
     name: Prepare Azure Storage
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-
-      - name: Save Storage Info
-        run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-      
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.4.6
-
-      - name: Check if state file exists
-        id: check_state
+  steps:
+      - name: Temp task - Debuging 
         run: |
-          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
-            --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
-          EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
-            --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
-          echo "exists=$EXISTS" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      
-      - name: Sprawdzenie katalogu
-        run: pwd && ls -al
+          echo $ARM_CLIENT_ID
+          echo ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
-      - name: Initialize Terraform
-        run: terraform init -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" -backend-config="container_name=$TF_CONTAINER_NAME" -backend-config="key=$TF_STATE_KEY"
+  # ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
 
-      - name: Terraform Plan 
-        # run: terraform plan -var-file="terraform.tfvars"
-        run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"      #  (Save to File) tfvars usd to plan
+  
+  #     - name: Login to Azure
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
-      - name: Upload Plan to Azure Blob Storage
-        run: |
-          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
-          az storage blob upload \
-            --container-name "$TF_PLAN_CONTAINER_NAME" \
-            --file "plan.tfplan" \
-            --name "plan-$(date +%Y%m%d-%H%M%S).tfplan" \
-            --overwrite
+  #     - name: Save Storage Info
+  #       run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
 
-      - name: Terraform Apply
-        # run: terraform  apply -auto-approve -var-file="terraform.tfvars"
-        run: terraform apply -auto-approve "plan.tfplan"   # (with saved plan)
-
-      - name: Sprawdzenie katalogu czy statefile istnieje
-        run: pwd && ls -al
-
-      - name: Upload State to Azure Blob Storage
-        run: |
-          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
-          az storage blob upload \
-            --container-name "$TF_CONTAINER_NAME" \
-            --file "$TF_STATE_KEY" \
-            --name "$TF_STATE_KEY-$(date +%Y%m%d-%H%M%S)" \
-            --overwrite
-          az storage blob upload \
-            --container-name "$TF_CONTAINER_NAME" \
-            --file "$TF_STATE_KEY" \
-            --name "$TF_STATE_KEY" \
-            --overwrite
-
-  # terraform-deploy-state:
-  #   name: Terraform Apply
-  #   runs-on: ubuntu-latest
-  #   needs: terraform-deploy # prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-storage'
-    
-
-  #   steps:
   #     - name: Checkout Code
   #       uses: actions/checkout@v3
       
@@ -106,31 +53,6 @@ jobs:
   #       with:
   #         terraform_version: 1.4.6
 
-  #     - name: Login to Azure
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-
-  #     - name: Ustawienie backendu Terraform (Azure Blob Storage)
-  #       run: |
-  #         cat > backend.tf <<-EOF
-  #         terraform {
-  #           backend "azurerm" {
-  #             resource_group_name   = "$TF_STATE_RESOURCE_GROUP"
-  #             storage_account_name  = "$TF_STORAGE_ACCOUNT_NAME"
-  #             container_name        = "$TF_CONTAINER_NAME"
-  #             key                   = "$TF_STATE_KEY"
-  #           }
-  #         }
-  #         EOF
-  #       shell: bash
-        
-  #     - name: Sprawdzenie katalogu
-  #       run: cat backend.tf
-
-  #     - name: Sprawdzenie katalogu
-  #       run: pwd && ls -al
-
   #     - name: Check if state file exists
   #       id: check_state
   #       run: |
@@ -138,21 +60,17 @@ jobs:
   #           --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
   #         EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
   #           --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
-  #         echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+  #         echo "exists=$EXISTS" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       
-  #     - name: Initialize Terraform with Backend
-  #       run: |
-  #         if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
-  #           echo "State file exists. Running 'terraform init -reconfigure'."
-  #           terraform init -reconfigure
-  #         else
-  #           echo "State file does not exist. Running 'terraform init'."
-  #           terraform init
-  #         fi
+  #     - name: Sprawdzenie katalogu
+  #       run: pwd && ls -al
 
+  #     - name: Initialize Terraform
+  #       run: terraform init -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" -backend-config="container_name=$TF_CONTAINER_NAME" -backend-config="key=$TF_STATE_KEY"
 
-  #     - name: Terraform Plan (Save to File)
-  #       run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"
+  #     - name: Terraform Plan 
+  #       # run: terraform plan -var-file="terraform.tfvars"
+  #       run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"      #  (Save to File) tfvars usd to plan
 
   #     - name: Upload Plan to Azure Blob Storage
   #       run: |
@@ -163,5 +81,98 @@ jobs:
   #           --name "plan-$(date +%Y%m%d-%H%M%S).tfplan" \
   #           --overwrite
 
-  #     - name: Terraform Apply (with saved plan)
-  #       run: terraform apply -auto-approve "plan.tfplan"
+  #     - name: Terraform Apply
+  #       # run: terraform  apply -auto-approve -var-file="terraform.tfvars"
+  #       run: terraform apply -auto-approve "plan.tfplan"   # (with saved plan)
+
+  #     - name: Sprawdzenie katalogu czy statefile istnieje
+  #       run: pwd && ls -al
+
+  #     - name: Upload State to Azure Blob Storage
+  #       run: |
+  #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+  #         az storage blob upload \
+  #           --container-name "$TF_CONTAINER_NAME" \
+  #           --file "$TF_STATE_KEY" \
+  #           --name "$TF_STATE_KEY-$(date +%Y%m%d-%H%M%S)" \
+  #           --overwrite
+  #         az storage blob upload \
+  #           --container-name "$TF_CONTAINER_NAME" \
+  #           --file "$TF_STATE_KEY" \
+  #           --name "$TF_STATE_KEY" \
+  #           --overwrite
+
+  # # terraform-deploy-state:
+  # #   name: Terraform Apply
+  # #   runs-on: ubuntu-latest
+  # #   needs: terraform-deploy # prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-storage'
+    
+
+  # #   steps:
+  # #     - name: Checkout Code
+  # #       uses: actions/checkout@v3
+      
+  # #     - name: Set up Terraform
+  # #       uses: hashicorp/setup-terraform@v2
+  # #       with:
+  # #         terraform_version: 1.4.6
+
+  # #     - name: Login to Azure
+  # #       uses: azure/login@v1
+  # #       with:
+  # #         creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+  # #     - name: Ustawienie backendu Terraform (Azure Blob Storage)
+  # #       run: |
+  # #         cat > backend.tf <<-EOF
+  # #         terraform {
+  # #           backend "azurerm" {
+  # #             resource_group_name   = "$TF_STATE_RESOURCE_GROUP"
+  # #             storage_account_name  = "$TF_STORAGE_ACCOUNT_NAME"
+  # #             container_name        = "$TF_CONTAINER_NAME"
+  # #             key                   = "$TF_STATE_KEY"
+  # #           }
+  # #         }
+  # #         EOF
+  # #       shell: bash
+        
+  # #     - name: Sprawdzenie katalogu
+  # #       run: cat backend.tf
+
+  # #     - name: Sprawdzenie katalogu
+  # #       run: pwd && ls -al
+
+  # #     - name: Check if state file exists
+  # #       id: check_state
+  # #       run: |
+  # #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+  # #           --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+  # #         EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
+  # #           --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
+  # #         echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+      
+  # #     - name: Initialize Terraform with Backend
+  # #       run: |
+  # #         if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
+  # #           echo "State file exists. Running 'terraform init -reconfigure'."
+  # #           terraform init -reconfigure
+  # #         else
+  # #           echo "State file does not exist. Running 'terraform init'."
+  # #           terraform init
+  # #         fi
+
+
+  # #     - name: Terraform Plan (Save to File)
+  # #       run: terraform plan -out=plan.tfplan -var-file="terraform.tfvars"
+
+  # #     - name: Upload Plan to Azure Blob Storage
+  # #       run: |
+  # #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+  # #         az storage blob upload \
+  # #           --container-name "$TF_PLAN_CONTAINER_NAME" \
+  # #           --file "plan.tfplan" \
+  # #           --name "plan-$(date +%Y%m%d-%H%M%S).tfplan" \
+  # #           --overwrite
+
+  # #     - name: Terraform Apply (with saved plan)
+  # #       run: terraform apply -auto-approve "plan.tfplan"
