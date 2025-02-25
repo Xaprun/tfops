@@ -26,10 +26,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+      # - name: Login to Azure
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
       - name: Save Storage Info
         run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
@@ -49,7 +49,7 @@ jobs:
             --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
           EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
             --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
-          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       
       - name: Sprawdzenie katalogu
         run: pwd && ls -al
