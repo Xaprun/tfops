@@ -33,7 +33,7 @@ runs:
       shell: bash
       run: |
         kubectl get nodes
-        kubectl delete -f ./k8s/pod.yaml
+        # kubectl delete -f ./k8s/pod.yaml
         kubectl apply -f ./k8s/ajpyapp-deployment.yaml
 
     - name: Poczekaj 10s i Test Kubernetes Deployment
