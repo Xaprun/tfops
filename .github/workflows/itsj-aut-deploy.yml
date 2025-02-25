@@ -11,6 +11,7 @@ env:
   # ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
   #TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
   AZ_CREDS_B64: ${{ secrets.AZURE_CREDENTIALS_BASE64 }}
+  AZ_CREDS: ${{secrets.CREDENTIALS_AZURE_ITSAJ_AUT}}
   
 jobs:
   investigate:
@@ -19,7 +20,7 @@ jobs:
     steps:
       - name: Set Azure Credentials
         run: |
-          export ARM_CLIENT_ID = $(jq -r .clientId $(secrets.CREDENTIALS_AZURE_ITSAJ_AUT))
+          export ARM_CLIENT_ID = $(jq -r .clientId $AZ_CREDS )
       
       # - name: Temp task - Debuging 
       #   run: |
