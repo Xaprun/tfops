@@ -33,10 +33,12 @@ runs:
       shell: bash
       run: |
         kubectl get nodes
-        kubectl apply -f ./k8s/pod.yaml
-        kubectl get pod
+        kubectl delete -f ./k8s/pod.yaml
+        kubectl apply -f ./k8s/ajpyapp-deployment.yaml
 
-    - name: Test Kubernetes Manifest
+    - name: Poczekaj 10s i Test Kubernetes Deployment
       shell: bash
-      run: kubectl get pod -n default
+      run: |
+        sleep 10
+        kubectl get all -n dev
 
