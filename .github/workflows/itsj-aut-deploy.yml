@@ -14,20 +14,17 @@ env:
 
 
 jobs:
-  prepare-storage:
+  investigate:
     name: Prepare Azure Storage
     runs-on: ubuntu-latest
-
     steps:
-        - name: Temp task - Debuging 
-          run: |
-            echo $ARM_CLIENT_ID
-            echo ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-
-  # ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  # ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  # ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  # TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
+      - name: Temp task - Debuging 
+        run: |
+          echo $ARM_CLIENT_ID
+          echo $ARM_CLIENT_SECRET
+          echo $ARM_SUBSCRIPTION_ID
+          echo $ARM_TENANT_ID
+          echo $TF_VAR_azure_credentials
 
   
   #     - name: Login to Azure
