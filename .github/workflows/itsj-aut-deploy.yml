@@ -3,7 +3,7 @@ name: Deploy AKS Cluster with Terraform and Storage Check
 on:
   push:
     branches:
-      - my-artificial-client-02
+      - my-artificial-client-03
 
 env:
   ARM_CLIENT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
@@ -77,12 +77,12 @@ jobs:
       - name: Save Storage Info
         run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
 
-  terraform-deploy:
-    name: Terraform Apply without state
-    runs-on: ubuntu-latest
-    needs: prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-stor
+  # terraform-deploy:
+  #   name: Terraform Apply without state
+  #   runs-on: ubuntu-latest
+  #   needs: prepare-storage  # Job wykonuje się dopiero po zakończeniu 'prepare-stor
 
-    steps:
+  #   steps:
       - name: Checkout Code
         uses: actions/checkout@v3
       
