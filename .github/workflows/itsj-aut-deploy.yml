@@ -26,7 +26,8 @@ jobs:
           echo $ARM_SUBSCRIPTION_ID >> test.txt
           echo $ARM_TENANT_ID >> test.txt
           echo $TF_VAR_azure_credentials >> test.txt
-          cat 1.txt
+          cat 1
+          test.txt
 
   
   #     - name: Login to Azure
