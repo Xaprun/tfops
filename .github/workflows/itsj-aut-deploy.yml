@@ -123,7 +123,11 @@ jobs:
         run: pwd && ls -al
 
       - name: Initialize Terraform
-        run: terraform init -reconfigure
+        run: terraform init \
+          -backend-config="resource_group_name=terraform-state-rg" \
+          -backend-config="storage_account_name=itsajtfstatestorage"" \
+          -backend-config="container_name=itsajtfstatestorage" \
+          -backend-config="key=terraform.tfstate"
 
       - name: Terraform Plan 
         # run: terraform plan -var-file="terraform.tfvars"
