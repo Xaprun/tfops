@@ -22,17 +22,21 @@ runs:
         creds: ${{ inputs.azure_credentials_json }}
 
     - name: Set up Kubectl
+      shell: bash
       run: az aks install-cli
 
     - name: Get AKS Credentials
+      shell: bash
       run: az aks get-credentials --name ${{ inputs.aks_cluster_name }} --overwrite-existing --resource-group ${{ inputs.aks_resource_group }}
 
     - name: Deploy Kubernetes Manifest
+      shell: bash
       run: |
         kubectl get nodes
         kubectl apply -f ./k8s/pod.yaml
         kubectl get pod
 
     - name: Test Kubernetes Manifest
+      shell: bash
       run: kubectl get pod -n default
 
