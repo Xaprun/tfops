@@ -20,11 +20,12 @@ jobs:
     steps:
       - name: Temp task - Debuging 
         run: |
-          echo $ARM_CLIENT_ID
+          echo $ARM_CLIENT_ID > 1.txt
           echo $ARM_CLIENT_SECRET
           echo $ARM_SUBSCRIPTION_ID
           echo $ARM_TENANT_ID
           echo $TF_VAR_azure_credentials
+           echo 1.txt
 
   
   #     - name: Login to Azure
