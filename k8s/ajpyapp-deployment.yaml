@@ -22,6 +22,7 @@ spec:
         app: pyapp
         module: backend
     spec:
+      name: pyapp-bck
       imagePullSecrets:
         - name: ghcr-secret
       containers:
@@ -65,6 +66,7 @@ spec:
         app: pyapp
         module: frontend
     spec:
+      name: pyapp-frnt
       imagePullSecrets:
         - name: ghcr-secret
       containers:
