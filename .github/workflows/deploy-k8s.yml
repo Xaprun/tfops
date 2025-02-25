@@ -36,7 +36,7 @@ jobs:
         run: pwd && ls -al
     
       - name: Deploy using composite action
-        uses: ./.github/actions/
+        uses: ./.github/actions/deploy-k8s-action.yml
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
