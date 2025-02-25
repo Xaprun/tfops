@@ -40,3 +40,5 @@ jobs:
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
+          azure_credentials_json: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+          
