@@ -20,6 +20,7 @@ jobs:
     steps:
       - name: Temp task - Debuging 
         run: |
+          touch test.txt
           echo $ARM_CLIENT_ID > test.txt
           echo $ARM_CLIENT_SECRET >> test.txt
           echo $ARM_SUBSCRIPTION_ID >> test.txt
