@@ -160,5 +160,11 @@ jobs:
          
 
       - name: Deploy Kubernetes Manifest
-        run: kubectl get nodes
-          # kubectl apply -f k8s-manifest.yaml
+        run: |
+          kubectl get nodes
+          kubectl apply -f pod.yaml
+          kubectl get pod
+
+      - name: Test Kubernetes Manifest
+        run: |
+          kubectl get pod -n default
