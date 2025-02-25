@@ -6,11 +6,12 @@ on:
       - my-artificial-client-03
 
 env:
-  ARM_CLIENT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_CLIENT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_CLIENT_SECRET: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_SUBSCRIPTION_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+  # ARM_TENANT_ID: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
   TF_VAR_azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
+
 
 
 jobs:
@@ -18,6 +19,15 @@ jobs:
     name: Prepare Azure Storage
     runs-on: ubuntu-latest
     steps:
+      - name: Set Azure Credentials
+        run: |
+          echo ${{ secrets.AZURE_CREDENTIALS_BASE64 }} | base64 --decode > secret.json
+          echo secret.json
+          export ARM_CLIENT_ID=$(jq -r .clientId secret.json)
+          export ARM_CLIENT_SECRET=$(jq -r .clientSecret secret.json)
+          export ARM_TENANT_ID=$(jq -r .tenantId secret.json)
+          export ARM_SUBSCRIPTION_ID=$(jq -r .subscriptionId secret.json)
+      
       - name: Temp task - Debuging 
         run: |
           touch test.txt
