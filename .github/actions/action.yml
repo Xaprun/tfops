@@ -7,6 +7,9 @@ inputs:
   aks_resource_group:
     description: 'Resource Group klastra AKS'
     required: true
+  azure_credentials_json:
+    description: 'Azure credentials JSON'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -16,7 +19,7 @@ runs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+        creds: ${{ inputs.azure_credentials_json }}
 
     - name: Set up Kubectl
       run: az aks install-cli
