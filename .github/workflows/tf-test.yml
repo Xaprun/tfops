@@ -16,6 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         
+      # SECURITY CHECK
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -23,13 +24,15 @@ jobs:
         
       - name: Install Checkov
         run: pip install -U checkov
-        # run: pip install checkov==3.0.0
-        
-      - name: Upgrade six (Fix for 'six.moves' issue)
-        run: pip install six --upgrade
         
       - name: Run Checkov scan TF
         run: checkov -d ./TF
+        
+      # CODE COMPOSITION CHECK
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
       
       - name: Sprawdzenie formatowania Terraform (terraform fmt)
         run: terraform fmt -check
@@ -52,60 +55,4 @@ jobs:
   #     - name: Skanowanie bezpieczeństwa z tfsec
   #       run: tfsec .
 
-  # terraform-deploy:
-  #   name: Terraform Apply without state
-  #   runs-on: ubuntu-latest
-  #   needs: terraform-check
-
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v3
-      
-  #     - name: Set up Terraform
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_version: 1.4.6
-
-  #     - name: Login to Azure
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-
-  #     - name: Check if state file exists
-  #       id: check_state
-  #       run: |
-  #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
-  #           --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
-  #         EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
-  #           --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
-  #         echo "exists=$EXISTS" >> $GITHUB_OUTPUT
-      
-  #     - name: Sprawdzenie katalogu
-  #       run: pwd && ls -al
-
-  #     - name: Initialize Terraform
-  #       run: terraform init
-
-  #     - name: Terraform Plan 
-  #       run: terraform plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
-
-  #     - name: Sprawdzenie czy plan się utworzył
-  #       run: |
-  #         pwd && ls -al
-  #         cat plan.tfplan
-        
-  #     - name: Upload Plan to Azure Blob Storage
-  #       run: |
-  #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
-  #         az storage blob upload \
-  #           --container-name "$TF_PLAN_CONTAINER_NAME" \
-  #           --file "plan.tfplan" \
-  #           --name "plan-$(date +%Y%m%d-%H%M%S).tfplan" \
-  #           --overwrite
-
-  #     - name: Terraform Apply
-  #       run: terraform apply -auto-approve "plan.tfplan"
-        
-  #     - name: Sprawdzenie katalogu czy statefile istnieje
-  #       run: pwd && ls -al
 
