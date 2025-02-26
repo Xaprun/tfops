@@ -37,5 +37,3 @@ module "aks_spot" {
   additional_pool_min_count  = var.additional_pool_min_count
   additional_pool_max_count  = var.additional_pool_max_count
 }
-
-
