@@ -7,11 +7,6 @@ on:
        - my-artificial-client-03
     paths:
       - 'TF/**'      # Uruchamia, gdy coś zmienia się w katalogu 'src'
-# env:
-#   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
 jobs:
   checkov_scan:
@@ -32,8 +27,12 @@ jobs:
       - name: Upgrade six (Fix for 'six.moves' issue)
         run: pip install six --upgrade
         
-      - name: Run Checkov scan
-        run: checkov -d .
+      - name: Run Checkov scan TF
+        run: checkov -d ./TF
+        
+      - name: Run Checkov scan k8s
+        run: checkov -d ./k8s
+
 
 
       
