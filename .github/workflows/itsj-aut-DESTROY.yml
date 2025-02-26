@@ -1,9 +1,10 @@
-name: Destroy AKS Cluster with Terraform and Update State
+name: Destroy Azure with Terraform
 
 on:
   workflow_dispatch:
   push:
     branches:
+      - prod
       # - my-artificial-client-03
 
 env:
