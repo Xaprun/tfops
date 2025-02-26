@@ -30,18 +30,12 @@ jobs:
         
       - name: Run Checkov scan TF
         run: checkov -d ./TF
-        
-      # - name: Run Checkov scan k8s
-      #   run: checkov -d ./k8s
-
-
-
       
-  #     - name: Sprawdzenie formatowania Terraform (terraform fmt)
-  #       run: terraform fmt -check
+      - name: Sprawdzenie formatowania Terraform (terraform fmt)
+        run: terraform fmt -check
 
-  #     - name: Walidacja konfiguracji Terraform (terraform validate)
-  #       run: terraform validate
+      - name: Walidacja konfiguracji Terraform (terraform validate)
+        run: terraform validate
 
   #     - name: Instalacja TFLint
   #       run: |
