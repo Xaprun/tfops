@@ -5,46 +5,34 @@ on:
     branches:
       # - prod
        - my-artificial-client-03
-env:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
-  TF_CONTAINER_NAME: "tfstate"
-  TF_PLAN_CONTAINER_NAME: "tfplan"
-  TF_STATE_KEY: "terraform.tfstate"
-  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
-  TF_STATE_REGION: "westeurope"
-  AKS_RESOURCE_GROUP: "my-resource-group"
-  AKS_CLUSTER_NAME: "my-aks-cluster"
+# env:
+#   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
 jobs:
-  terraform-check:
-    name: Terraform Checks & Security Scan
+  checkov_scan:
     runs-on: ubuntu-latest
-
+    
     steps:
-
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.4.6
-
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
-          
+          python-version: '3.11' # Użyj starszej wersji Pythona, kompatybilnej z Checkov 2.0.0
+        
       - name: Install Checkov
         run: pip install checkov==2.0.0
-      
+        
+      - name: Upgrade six (Fix for 'six.moves' issue)
+        run: pip install six --upgrade
+        
       - name: Run Checkov scan
         run: checkov -d .
-      
+
 
       
   #     - name: Sprawdzenie formatowania Terraform (terraform fmt)
