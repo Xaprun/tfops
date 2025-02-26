@@ -41,12 +41,12 @@ jobs:
         run: terraform validate
 
       - name: Analiza statyczna z TFLint
-        uses: wata727/tflint-action@v1
+        uses: antonbabenko/tflint-github-actions@v1 # wata727/tflint-action@v1 nie działa
         with:
           version: 'latest'
       
       - name: Skanowanie bezpieczeństwa z tfsec
-        uses: liamg/tfsec-action@v1
+        uses: tfsec/tfsec-action@v1 # liamg/tfsec-action@v1 nie działa
         with:
           args: .
 
