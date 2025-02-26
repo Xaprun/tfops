@@ -1,0 +1,30 @@
+name: TF check & deploy to Azure
+
+on:
+  push:
+    branches:
+      # - prod
+       - my-artificial-client-03
+    paths:
+      - 'k8s/**'      # Uruchamia, gdy coś zmienia się w katalogu 'src'
+
+jobs:
+  checkov_scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11' 
+        
+      - name: Install Checkov
+        run: pip install -U checkov
+        # run: pip install checkov==3.0.0
+
+        
+      - name: Run Checkov scan k8s
+        run: checkov -d ./k8s
