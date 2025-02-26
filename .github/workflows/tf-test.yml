@@ -26,6 +26,7 @@ jobs:
 
     steps:
       - name: Install Rust Compiler
+        id: step1
         run: |
           sudo apt update
           sudo apt install -y curl
@@ -41,6 +42,7 @@ jobs:
           terraform_version: 1.4.6
 
       - name: Skanowanie bezpieczeństwa z Checkov
+        if: success() 
         uses: bridgecrewio/checkov-action@v6
         with:
           directory: .
