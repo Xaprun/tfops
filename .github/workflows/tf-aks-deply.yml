@@ -1,9 +1,10 @@
-name: Deploy AKS Cluster with Terraform and Storage Check
+name: TF Destroy Azure Infra
 
 on:
   push:
     branches:
-     # - my-artificial-client-03
+      - prod
+      # - my-artificial-client-03
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
