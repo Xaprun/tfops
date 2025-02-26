@@ -25,7 +25,7 @@ jobs:
           python-version: '3.11' # Użyj starszej wersji Pythona, kompatybilnej z Checkov 2.0.0
         
       - name: Install Checkov
-        run: pip install checkov==2.0.0
+        run: pip install checkov==3.0.0
         
       - name: Upgrade six (Fix for 'six.moves' issue)
         run: pip install six --upgrade
