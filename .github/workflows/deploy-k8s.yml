@@ -1,8 +1,8 @@
-name: Deploy AKS Cluster with Terraform and Storage Check
-
+name: Deploy TF AKS & k8s manifests
 on:
   push:
     branches:
+      - prod
       # - my-artificial-client-03
 
 env:
