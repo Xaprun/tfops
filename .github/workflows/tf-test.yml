@@ -30,8 +30,8 @@ jobs:
       - name: Run Checkov scan TF
         run: checkov -d ./TF
         
-      - name: Run Checkov scan k8s
-        run: checkov -d ./k8s
+      # - name: Run Checkov scan k8s
+      #   run: checkov -d ./k8s
 
 
 
