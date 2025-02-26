@@ -5,6 +5,8 @@ on:
     branches:
       # - prod
        - my-artificial-client-03
+    paths:
+      - 'TF/**'      # Uruchamia, gdy coś zmienia się w katalogu 'src'
 # env:
 #   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
 #   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
