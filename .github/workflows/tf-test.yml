@@ -25,13 +25,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Rust Compiler
-        id: step1
-        run: |
-          sudo apt update
-          sudo apt install -y curl
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source $HOME/.cargo/env
 
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -40,13 +33,12 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.4.6
-
-      - name: Skanowanie bezpieczeństwa z Checkov
-        if: success() 
-        uses: bridgecrewio/checkov-action@v6
-        with:
-          directory: .
-
+          
+      - name: Install Checkov
+        run: pip install checkov==2.0.0
+      
+      - name: Run Checkov scan
+        run: checkov -d .
       
 
       
