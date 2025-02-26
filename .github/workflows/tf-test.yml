@@ -5,7 +5,6 @@ on:
     branches:
       # - prod
        - my-artificial-client-03
-
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -40,21 +39,26 @@ jobs:
       - name: Walidacja konfiguracji Terraform (terraform validate)
         run: terraform validate
 
-      - name: Analiza statyczna z TFLint
-        uses: antonbabenko/tflint-github-actions@v1 # wata727/tflint-action@v1 nie działa
-        with:
-          version: 'latest'
+      - name: Instalacja TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --init
       
-      - name: Skanowanie bezpieczeństwa z tfsec
-        uses: tfsec/tfsec-action@v1 # liamg/tfsec-action@v1 nie działa
-        with:
-          args: .
+      - name: Analiza statyczna z TFLint
+        run: tflint
 
-      - name: Dodatkowy skan bezpieczeństwa z Checkov
+      - name: Instalacja tfsec
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash
+
+      - name: Skanowanie bezpieczeństwa z tfsec
+        run: tfsec .
+
+      - name: Skanowanie bezpieczeństwa z Checkov
         uses: bridgecrewio/checkov-action@v6
         with:
           directory: .
-          
+
   terraform-deploy:
     name: Terraform Apply without state
     runs-on: ubuntu-latest
@@ -111,3 +115,4 @@ jobs:
         
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al
+
