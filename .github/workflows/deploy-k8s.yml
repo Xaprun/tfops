@@ -1,4 +1,5 @@
-name: Deploy TF AKS & k8s manifests
+# applicable only if the cluster is present 
+name: Deploy k8s manifests
 on:
   push:
     branches:
@@ -31,12 +32,13 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
-      - name: Sprawdzenie katalogu - czy action istnieje ?
-        run: pwd && ls -al
+      
+      # Uncomment to verify presence of reqired file
+      # - name: Sprawdzenie czy action istnieje
+      #   run: pwd && ls -al
     
       - name: Deploy using composite action
-        uses: ./.github/actions/
+        uses: ./.github/actions/aks-deploy.yml
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
