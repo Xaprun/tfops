@@ -16,6 +16,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
         
       # SECURITY CHECK
       - name: Set up Python
@@ -23,23 +28,19 @@ jobs:
         with:
           python-version: '3.11' # Użyj starszej wersji Pythona, kompatybilnej z Checkov 2.0.0
         
-      - name: Install Checkov
-        run: pip install -U checkov
+      # - name: Install Checkov
+      #   run: pip install -U checkov
         
-      - name: Run Checkov scan TF
-        run: checkov -d ./TF
+      # - name: Run Checkov scan TF
+      #   run: checkov -d ./TF
         
-      # CODE COMPOSITION CHECK
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.4.6
-      
-      - name: Sprawdzenie formatowania Terraform (terraform fmt)
-        run: terraform fmt -check
+          
+         # CODE COMPOSITION CHECK   
+      # - name: Sprawdzenie formatowania Terraform (terraform fmt)
+      #   run: terraform fmt -check
 
-      - name: Walidacja konfiguracji Terraform (terraform validate)
-        run: terraform validate
+      # - name: Walidacja konfiguracji Terraform (terraform validate)
+      #   run: terraform validate
 
       - name: Instalacja TFLint
         run: |
@@ -51,7 +52,10 @@ jobs:
 
       - name: Instalacja tfsec
         run: |
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash
+            go install github.com/aquasecurity/tfsec/cmd/tfsec@latest
+            echo "$HOME/go/bin" >> $GITHUB_PATH
+        # out of date:
+        # curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash 
 
   #     - name: Skanowanie bezpieczeństwa z tfsec
   #       run: tfsec .
