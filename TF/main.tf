@@ -22,7 +22,9 @@ provider "azurerm" {
 }
 
 module "aks_spot" {
-  source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot?ref=2db8acc04a4a250cd84b9c2209cb25a102be149f"
+  source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot?ref=d89454c669724f9ecf7402a5cdc87552758d6ed0"
+  #INFO previous, no private ip version: 
+  # source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot?ref=2db8acc04a4a250cd84b9c2209cb25a102be149f"
 
   aks_cluster_name          = var.aks_cluster_name
   location                  = var.location
