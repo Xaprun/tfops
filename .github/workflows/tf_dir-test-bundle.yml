@@ -1,5 +1,4 @@
-name: TF check & deploy to Azure
-
+name: TF testing
 on:
   push:
     branches:
@@ -10,7 +9,7 @@ on:
     #   - 'TF/**'     
 
 jobs:
-  checkov_scan:
+  tf_scan:
     runs-on: ubuntu-latest
     
     steps:
@@ -42,13 +41,13 @@ jobs:
       # - name: Walidacja konfiguracji Terraform (terraform validate)
       #   run: terraform validate
 
-      - name: Instalacja TFLint
-        run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          tflint --init
+      # - name: Instalacja TFLint
+      #   run: |
+      #     curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      #     tflint --init
       
-      - name: Analiza statyczna z TFLint
-        run: tflint
+      # - name: Analiza statyczna z TFLint
+      #   run: tflint
 
       - name: Instalacja tfsec
         run: |
@@ -57,7 +56,7 @@ jobs:
         # out of date:
         # curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash 
 
-  #     - name: Skanowanie bezpieczeństwa z tfsec
-  #       run: tfsec .
+      - name: Skanowanie bezpieczeństwa z tfsec
+        run: tfsec .
 
 
