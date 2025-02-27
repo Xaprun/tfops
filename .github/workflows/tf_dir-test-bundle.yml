@@ -2,11 +2,11 @@ name: TF testing
 on:
   push:
     branches:
-      # - prod
        - my-artificial-client-03
     # Uncommento to stop triggers on changes of the workflow
-    # paths:
-    #   - 'TF/**'     
+    # comment to trigger on "TF testing" script development
+    paths:
+      - 'TF/**'     
 
 jobs:
   tf_scan:
@@ -32,8 +32,7 @@ jobs:
         run: |
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           tflint --init
-      
-      - name: Analiza statyczna z TFLint
+      - name: SCA with TFLint
         run: tflint
 
       # SECURITY CHECK
@@ -46,16 +45,9 @@ jobs:
         run:
             tfsec .
         
-     
-      # - name: Set up Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: '3.11' # Użyj starszej wersji Pythona, kompatybilnej z Checkov 2.0.0
-        
       - name: Checkov setup & scanning
         run: |
-          pip install -U checkov   
-          #- name: Run Checkov scan TF run: 
+          pip install -U checkov
           checkov -d ./TF
 
 
