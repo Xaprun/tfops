@@ -82,7 +82,7 @@ jobs:
         run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
 
   terraform-deploy:
-    name: Terraform Apply without state
+    name: Terraform Apply Task
     runs-on: ubuntu-latest
     needs: prepare-storage
 
@@ -109,10 +109,10 @@ jobs:
             --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
           echo "exists=$EXISTS" >> $GITHUB_OUTPUT
       
-      - name: Sprawdzenie katalogu
+      - name: Dir test
         run: pwd && ls -al
 
-      - name: Initialize Terraform
+      - name: Initialize Terraform with backend & modules
         run: terraform init
 
       - name: Terraform Plan 
@@ -121,7 +121,6 @@ jobs:
       - name: Sprawdzenie czy plan się utworzył
         run: |
           pwd && ls -al
-          cat plan.tfplan
         
       - name: Upload Plan to Azure Blob Storage
         run: |
@@ -150,7 +149,8 @@ jobs:
         run: pwd && ls -al
     
       - name: Deploy using composite action
-        uses: ./.github/workflows/deploy-k8s/
+        uses: ./.github/actions/aks-deploy.yml
         with:
           aks_cluster_name: "my-aks-cluster"
           aks_resource_group: "my-resource-group"
+          azure_credentials_json: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
