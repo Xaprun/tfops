@@ -5,8 +5,9 @@ on:
     branches:
       # - prod
        - my-artificial-client-03
-    paths:
-      - 'TF/**'      # Uruchamia, gdy coś zmienia się w katalogu 'src'
+    # Uncommento to stop triggers on changes of the workflow
+    # paths:
+    #   - 'TF/**'     
 
 jobs:
   checkov_scan:
@@ -40,10 +41,10 @@ jobs:
       - name: Walidacja konfiguracji Terraform (terraform validate)
         run: terraform validate
 
-  #     - name: Instalacja TFLint
-  #       run: |
-  #         curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-  #         tflint --init
+      - name: Instalacja TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --init
       
   #     - name: Analiza statyczna z TFLint
   #       run: tflint
