@@ -46,12 +46,12 @@ jobs:
           curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
           tflint --init
       
-  #     - name: Analiza statyczna z TFLint
-  #       run: tflint
+      - name: Analiza statyczna z TFLint
+        run: tflint
 
-  #     - name: Instalacja tfsec
-  #       run: |
-  #         curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash
+      - name: Instalacja tfsec
+        run: |
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash
 
   #     - name: Skanowanie bezpieczeństwa z tfsec
   #       run: tfsec .
