@@ -5,8 +5,8 @@ on:
       # - prod
        - my-artificial-client-03
     # Uncommento to stop triggers on changes of the workflow
-    # paths:
-    #   - 'TF/**'     
+    paths:
+      - 'TF/**'     
 
 jobs:
   tf_scan:
@@ -27,27 +27,27 @@ jobs:
         with:
           python-version: '3.11' # Użyj starszej wersji Pythona, kompatybilnej z Checkov 2.0.0
         
-      # - name: Install Checkov
-      #   run: pip install -U checkov
+      - name: Install Checkov
+        run: pip install -U checkov
         
-      # - name: Run Checkov scan TF
-      #   run: checkov -d ./TF
+      - name: Run Checkov scan TF
+        run: checkov -d ./TF
         
           
-         # CODE COMPOSITION CHECK   
-      # - name: Sprawdzenie formatowania Terraform (terraform fmt)
-      #   run: terraform fmt -check
+         CODE COMPOSITION CHECK   
+      - name: Sprawdzenie formatowania Terraform (terraform fmt)
+        run: terraform fmt -check
 
-      # - name: Walidacja konfiguracji Terraform (terraform validate)
-      #   run: terraform validate
+      - name: Walidacja konfiguracji Terraform (terraform validate)
+        run: terraform validate
 
-      # - name: Instalacja TFLint
-      #   run: |
-      #     curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-      #     tflint --init
+      - name: Instalacja TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          tflint --init
       
-      # - name: Analiza statyczna z TFLint
-      #   run: tflint
+      - name: Analiza statyczna z TFLint
+        run: tflint
 
       - name: Instalacja tfsec
         run: |
