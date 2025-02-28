@@ -1,4 +1,4 @@
-name: TF Destroy Azure Infra
+name: TF DEPLOY Azure
 
 on:
   push:
@@ -26,7 +26,13 @@ env:
   $AKS_CLUSTER_NAME: "my-aks-cluster"
 
 jobs:
-  prepare-storage:
+  call_tf_testing:
+    uses: xaprun/terraform-ci-cd/.github/workflows/tf-scan-bundle.yml@main
+    with:
+      branch: main
+      path: TF/**
+
+  prepare-backend-storage:
     name: Prepare Azure Storage
     runs-on: ubuntu-latest
 
