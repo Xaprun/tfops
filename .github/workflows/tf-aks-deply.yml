@@ -138,7 +138,7 @@ jobs:
             --overwrite
 
       - name: Terraform Apply
-        run: terraform -chdir=TF apply -auto-approve "./TF/plan.tfplan"
+        run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
         
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al ./TF
