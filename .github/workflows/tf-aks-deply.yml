@@ -3,8 +3,7 @@ name: TF DEPLOY Azure
 on:
   push:
     branches:
-      - prod
-      # - my-artificial-client-03
+      - my-artificial-client-03
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
