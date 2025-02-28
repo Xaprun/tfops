@@ -65,7 +65,7 @@ jobs:
         run: terraform -chdir=TF plan -destroy -out=destroy.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
 
       - name: Review Destroy Plan
-        run: terraform show destroy.tfplan
+        run: terraform -chdir=TF show destroy.tfplan
 
       - name: Terraform Destroy
         run: terraform -chdir=TF apply -auto-approve "destroy.tfplan"
