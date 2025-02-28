@@ -121,7 +121,7 @@ jobs:
         run: terraform -chdir=TF init 
 
       - name: Terraform Plan 
-        run: terraform -chdir=TF plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
+        run: terraform -chdir=TF plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="./TF/terraform.tfvars"
 
       - name: Sprawdzenie czy plan się utworzył
         run: |
@@ -138,7 +138,7 @@ jobs:
             --overwrite
 
       - name: Terraform Apply
-        run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
+        run: terraform -chdir=TF apply -auto-approve "./TF/plan.tfplan"
         
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al ./TF
