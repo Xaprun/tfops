@@ -115,20 +115,21 @@ jobs:
           echo "exists=$EXISTS" >> $GITHUB_OUTPUT
       
       - name: Dir test
-        run: pwd && ls -al
+        run: pwd && ls -al ./TF
 
       - name: Initialize Terraform with backend & modules
-        run: terraform init
+        run: terraform -chdir=TF init 
 
       - name: Terraform Plan 
-        run: terraform plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
+        run: terraform -chdir=TF plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
 
       - name: Sprawdzenie czy plan się utworzył
         run: |
-          pwd && ls -al
+          pwd && ls -al ./TF
         
       - name: Upload Plan to Azure Blob Storage
         run: |
+          cd TF
           export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
           az storage blob upload \
             --container-name "$TF_PLAN_CONTAINER_NAME" \
@@ -137,10 +138,10 @@ jobs:
             --overwrite
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve "plan.tfplan"
+        run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
         
       - name: Sprawdzenie katalogu czy statefile istnieje
-        run: pwd && ls -al
+        run: pwd && ls -al ./TF
 
   deploy-k8s-manifest:
     name: Deploy Kubernetes Manifest
