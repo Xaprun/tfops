@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - my-artificial-client-03
+    paths:
+      - 'TF/**' 
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
