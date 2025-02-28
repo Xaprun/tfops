@@ -48,26 +48,27 @@ jobs:
       
       - name: Initialize Terraform with Backend
         run: |
-          if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
-            echo "State file exists. Running 'terraform init -reconfigure'."
-            terraform init -reconfigure \
-              -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
-              -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
-              -backend-config="container_name=$TF_CONTAINER_NAME" \
-              -backend-config="key=$TF_STATE_KEY"
-          else
-            echo "State file does not exist. Running 'terraform init'."
-            terraform init
-          fi
+          terraform -chdir=TF init
+          # if [ "${{ steps.check_state.outputs.exists }}" = "true" ]; then
+          #   echo "State file exists. Running 'terraform init -reconfigure'."
+          #   terraform init -reconfigure \
+          #     -backend-config="resource_group_name=$TF_STATE_RESOURCE_GROUP" \
+          #     -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+          #     -backend-config="container_name=$TF_CONTAINER_NAME" \
+          #     -backend-config="key=$TF_STATE_KEY"
+          # else
+          #   echo "State file does not exist. Running 'terraform init'."
+          #   terraform init
+          # fi
 
       - name: Terraform Plan Destroy
-        run: terraform plan -destroy -out=destroy.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
+        run: terraform -chdir=TF plan -destroy -out=destroy.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
 
       - name: Review Destroy Plan
         run: terraform show destroy.tfplan
 
       - name: Terraform Destroy
-        run: terraform apply -auto-approve "destroy.tfplan"
+        run: terraform -chdir=TF apply -auto-approve "destroy.tfplan"
 
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al
