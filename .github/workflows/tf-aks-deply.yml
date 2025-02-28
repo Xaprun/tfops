@@ -147,10 +147,10 @@ jobs:
         
       - name: Sprawdzenie katalogu - czy action istnieje ?
         run: pwd && ls -al
-    
-      - name: Deploy using composite action
-        uses: ./.github/actions/aks-deploy.yml
-        with:
-          aks_cluster_name: "my-aks-cluster"
-          aks_resource_group: "my-resource-group"
-          azure_credentials_json: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+      # MOCK: uncomment to deploy k8s resporces
+      # - name: Deploy using composite action
+      #   uses: ./.github/actions/aks-deploy.yml
+      #   with:
+      #     aks_cluster_name: "my-aks-cluster"
+      #     aks_resource_group: "my-resource-group"
+      #     azure_credentials_json: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
