@@ -29,7 +29,7 @@ jobs:
     uses: xaprun/terraform-ci-cd/.github/workflows/tf-scan-bundle.yml@main
     with:
       branch: main
-      path: TF/**
+      path: TF/
 
   prepare-tf-backend-storage:
     name: Prepare Azure Storage
