@@ -44,3 +44,5 @@ module "aks" {
   tags        = var.tags
   environment = var.environment
 }
+
+
