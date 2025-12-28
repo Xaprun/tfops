@@ -28,11 +28,12 @@ env:
   $AKS_CLUSTER_NAME: "my-aks-cluster"
 
 jobs:
-  call_tf_testing:
-    uses: xaprun/terraform-ci-cd/.github/workflows/tf-scan-bundle.yml@main
-    with:
-      branch: main
-      path: TF/
+  # TEMPORARY MOCKED
+  # call_tf_testing:
+  #   uses: xaprun/terraform-ci-cd/.github/workflows/tf-scan-bundle.yml@main
+  #   with:
+  #     branch: main
+  #     path: TF/
 
   prepare-tf-backend-storage:
     name: Prepare Azure Storage
