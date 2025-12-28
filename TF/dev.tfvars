@@ -18,4 +18,3 @@ tags = {
   Owner = "itsaj"
   Cost  = "lab"
 }
-
