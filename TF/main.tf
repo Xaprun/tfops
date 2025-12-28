@@ -28,6 +28,10 @@ module "aks" {
   # Jak nie wiesz co robisz -> zostaw null, bo się odetniesz od API
   api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
+  tenant_id                     = var.tenant_id
+  local_account_disabled         = var.local_account_disabled
+  aad_admin_group_object_ids     = var.aad_admin_group_object_ids
+
   node_count   = var.node_count
   node_vm_size = var.node_vm_size
 
