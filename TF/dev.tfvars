@@ -1,8 +1,8 @@
-resource_group_name = "rg-aks-dev-weu-02"
-aks_cluster_name    = "aks-dev-weu-02"
+resource_group_name = "rg-aks-dev-weu-03"
+aks_cluster_name    = "aks-dev-weu-03"
 
-vnet_name   = "vnet-aks-dev-weu-02"
-subnet_name = "snet-aks-dev-weu-02"
+vnet_name   = "vnet-aks-dev-weu-03"
+subnet_name = "snet-aks-dev-weu-03"
 
 environment = "dev"
 
