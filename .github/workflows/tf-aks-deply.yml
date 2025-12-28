@@ -143,6 +143,15 @@ jobs:
 
       - name: Terraform Apply
         run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
+
+      - name: Cleanup on failure
+        if: steps.apply.outcome == 'failure'
+        run: |
+            echo "Apply failed – cleaning up RG"
+            az group delete \
+              --name rg-aks-dev-weu-04 \
+              --yes \
+              --no-wait
         
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al ./TF
