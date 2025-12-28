@@ -1,75 +1,96 @@
-variable "aks_cluster_name" {
-  description = "Nazwa klastra AKS"
-  type        = string
-}
-
 variable "location" {
-  description = "Region Azure"
-  type        = string
-  default     = "West Europe"
+  type    = string
+  default = "West Europe"
 }
 
 variable "resource_group_name" {
-  description = "Nazwa grupy zasobów"
-  type        = string
+  type = string
 }
 
+variable "aks_cluster_name" {
+  type = string
+}
+
+variable "environment" {
+  type    = string
+  default = "dev"
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
+# Networking
+variable "vnet_name"   { type = string }
+variable "subnet_name" { type = string }
+
+variable "vnet_cidr" {
+  type    = string
+  default = "10.10.0.0/16"
+}
+
+variable "subnet_cidr" {
+  type    = string
+  default = "10.10.1.0/24"
+}
+
+# AKS sizing
 variable "node_count" {
-  description = "Liczba węzłów w puli domyślnej"
-  type        = number
-  default     = 1
+  type    = number
+  default = 1
 }
 
 variable "node_vm_size" {
-  description = "Rozmiar VM w puli domyślnej"
-  type        = string
-  default     = "Standard_DS2_v2"
+  type    = string
+  default = "Standard_DS2_v2"
 }
 
+# Uwaga: to ma być PUBLICZNY CIDR/IP Twojego klienta, nie prywatne 10.x/192.168.x.
+# null = brak ograniczenia. (Najbezpieczniej na start: null)
+variable "api_server_authorized_ip_ranges" {
+  type    = list(string)
+  default = null
+}
+
+# Monitoring
+variable "enable_oms_agent" {
+  type    = bool
+  default = true
+}
+
+# Extra pool
 variable "enable_additional_pool" {
-  description = "Czy włączyć dodatkową pulę"
-  type        = bool
-  default     = false
+  type    = bool
+  default = false
 }
 
 variable "additional_pool_mode" {
-  description = "Tryb dodatkowej puli: Standard lub Spot"
-  type        = string
-  default     = "Standard"
+  type    = string
+  default = "Standard"
 }
 
 variable "additional_pool_name" {
-  description = "Nazwa dodatkowej puli"
-  type        = string
-  default     = "extra"
+  type    = string
+  default = "extra"
 }
 
 variable "additional_pool_vm_size" {
-  description = "Rozmiar VM w dodatkowej puli"
-  type        = string
-  default     = "Standard_DS2_v2"
+  type    = string
+  default = "Standard_DS2_v2"
 }
 
-variable "additional_pool_node_count" {
-  description = "Liczba węzłów w dodatkowej puli"
-  type        = number
-  default     = 2
+variable "additional_pool_enable_auto_scaling" {
+  type    = bool
+  default = true
 }
 
 variable "additional_pool_min_count" {
-  description = "Minimalna liczba węzłów (auto-scaling)"
-  type        = number
-  default     = 1
+  type    = number
+  default = 1
 }
 
 variable "additional_pool_max_count" {
-  description = "Maksymalna liczba węzłów (auto-scaling)"
-  type        = number
-  default     = 5
-}
-
-variable "azure_credentials" {
-  description = "Zakodowane w Base64 dane uwierzytelniające Azure (Service Principal)"
-  type        = string
-  sensitive   = true
+  type    = number
+  default = 5
 }
