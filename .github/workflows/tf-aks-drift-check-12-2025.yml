@@ -1,0 +1,57 @@
+name: TF AKS DRIFT CHECK 12-2025
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
+  TF_CONTAINER_NAME: "tfstate"
+  TF_STATE_KEY: "dev.tfstate"
+  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
+
+jobs:
+  drift-check:
+    name: Terraform Drift Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+      - name: Terraform Init (remote backend)
+        run: |
+          terraform -chdir=TF init \
+            -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_STORAGE_ACCOUNT_NAME}" \
+            -backend-config="container_name=${TF_CONTAINER_NAME}" \
+            -backend-config="key=${TF_STATE_KEY}"
+
+      - name: Terraform Validate
+        run: terraform -chdir=TF validate
+
+      - name: Terraform Drift Check (plan only)
+        id: plan
+        run: |
+          terraform -chdir=TF plan \
+            -var-file=dev.tfvars \
+            -detailed-exitcode
+        continue-on-error: true
+
+      - name: Interpret Drift Result
+        run: |
+          if [ "${{ steps.plan.outcome }}" = "failure" ]; then
+            echo "❌ DRIFT DETECTED between state and real infrastructure"
+            exit 1
+          else
+            echo "✅ No drift detected"
+          fi
