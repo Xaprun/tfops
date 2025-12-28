@@ -15,6 +15,6 @@ node_vm_size = "Standard_DS2_v2"
 enable_additional_pool = false
 
 tags = {
-  Owner = "Jedrzej"
+  Owner = "itsaj"
   Cost  = "lab"
 }
