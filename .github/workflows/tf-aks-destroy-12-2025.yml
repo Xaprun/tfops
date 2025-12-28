@@ -1,1 +1,63 @@
+name: TF AKS DESTROY 12-2025
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to destroy (dev / qa / prod)"
+        required: true
+        default: "dev"
+      confirm_destroy:
+        description: "Type DESTROY to confirm"
+        required: true
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
+  TF_CONTAINER_NAME: "tfstate"
+  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
+
+jobs:
+  destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ inputs.confirm_destroy }}" != "DESTROY" ]; then
+            echo "❌ Destroy not confirmed. Type DESTROY to proceed."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+
+      - name: Terraform Init (remote backend)
+        run: |
+          terraform -chdir=TF init \
+            -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_STORAGE_ACCOUNT_NAME}" \
+            -backend-config="container_name=${TF_CONTAINER_NAME}" \
+            -backend-config="key=${{ inputs.environment }}.tfstate"
+
+      - name: Terraform Destroy Plan
+        run: |
+          terraform -chdir=TF plan \
+            -destroy \
+            -var-file=${{ inputs.environment }}.tfvars \
+            -out=destroy.tfplan
+
+      - name: Terraform Destroy Apply
+        run: |
+          terraform -chdir=TF apply -auto-approve destroy.tfplan
 
