@@ -94,5 +94,23 @@ variable "additional_pool_max_count" {
   type    = number
   default = 5
 }
+# fix warnings
+variable "tenant_id" {
+  type        = string
+  description = "Tenant ID for AKS AAD integration"
+  default     = null
+}
+
+variable "local_account_disabled" {
+  type        = bool
+  description = "Disable local AKS admin account"
+  default     = false
+}
+
+variable "aad_admin_group_object_ids" {
+  type        = list(string)
+  description = "AAD group object IDs for AKS admins"
+  default     = null
+}
 
 
