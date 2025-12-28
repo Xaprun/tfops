@@ -4,3 +4,4 @@ This is a repo to conduct cloud infrastructure automation
 - credentials as github-secret added
 - depends_on for RG
 - requires no rg or resources
+
