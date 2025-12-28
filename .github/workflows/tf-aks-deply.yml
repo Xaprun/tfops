@@ -19,7 +19,7 @@ env:
   TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
   TF_CONTAINER_NAME: "tfstate"
   TF_PLAN_CONTAINER_NAME: "tfplan"
-  TF_STATE_KEY: "terraform.tfstate"
+  TF_STATE_KEY: "dev.tfstate"
   TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
   TF_STATE_REGION: "westeurope"
 
