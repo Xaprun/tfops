@@ -42,19 +42,23 @@ jobs:
       - name: Terraform Validate
         run: terraform -chdir=TF validate
 
-      - name: Terraform Drift Check (plan only)
+      - name: Terraform Drift Check
         id: plan
         run: |
-          terraform -chdir=TF plan \
-            -var-file=dev.tfvars \
-            -detailed-exitcode
-        continue-on-error: true
+          set +e
+          terraform -chdir=TF plan -var-file=dev.tfvars -detailed-exitcode
+          echo "exitcode=$?" >> $GITHUB_OUTPUT
 
       - name: Interpret Drift Result
         run: |
-          if [ "${{ steps.plan.outcome }}" = "failure" ]; then
+          if [ "${{ steps.plan.outputs.exitcode }}" = "0" ]; then
+            echo "✅ No drift detected"
+            exit 0
+          elif [ "${{ steps.plan.outputs.exitcode }}" = "2" ]; then
             echo "❌ DRIFT DETECTED between state and real infrastructure"
             exit 1
           else
-            echo "✅ No drift detected"
+            echo "❌ Terraform error"
+            exit 1
           fi
+
