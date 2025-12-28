@@ -143,26 +143,27 @@ jobs:
 
       - name: Terraform Apply
         run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
+        continue-on-error: true
 
       - name: Cleanup on failure
         if: steps.apply.outcome == 'failure'
         run: |
             echo "Apply failed – cleaning up RG"
             az group delete \
-              --name rg-aks-dev-weu-04 \
+              --name rg-aks-dev-neu-* \
               --yes \
               --no-wait
         
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al ./TF
 
-  deploy-k8s-manifest:
-    name: Deploy Kubernetes Manifest
-    runs-on: ubuntu-latest
-    needs: terraform-deploy
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  # deploy-k8s-manifest:
+  #   name: Deploy Kubernetes Manifest
+  #   runs-on: ubuntu-latest
+  #   needs: terraform-deploy
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
         
-      - name: Sprawdzenie katalogu - czy action istnieje ?
-        run: pwd && ls -al
+  #     - name: Sprawdzenie katalogu - czy action istnieje ?
+  #       run: pwd && ls -al
