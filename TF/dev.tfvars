@@ -1,10 +1,10 @@
 location = "Sweden Central"
 
-resource_group_name = "rg-aks-dev-sc-01"
-aks_cluster_name    = "aks-dev-sc-01"
+resource_group_name = "rg-aks-dev-sc-02"
+aks_cluster_name    = "aks-dev-sc-02"
 
-vnet_name   = "vnet-aks-dev-sc-01"
-subnet_name = "snet-aks-dev-sc-01"
+vnet_name   = "vnet-aks-dev-sc-02"
+subnet_name = "snet-aks-dev-sc-02"
 
 environment = "dev"
 
@@ -12,7 +12,7 @@ environment = "dev"
 api_server_authorized_ip_ranges = null
 
 node_count   = 1
-node_vm_size = "Standard_DS2_v2"
+node_vm_size = "Standard_B4ms"
 
 enable_additional_pool = false
 
