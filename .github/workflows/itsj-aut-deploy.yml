@@ -1,4 +1,4 @@
-name: Deploy AKS Cluster with Terraform
+name: Deploy AKS Cluster with Terraform v0.1
 
 on:
   push:
