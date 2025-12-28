@@ -16,7 +16,7 @@ provider "azurerm" {
 }
 
 module "aks_spot" {
-  source = "git::ttps://github.com/Xaprun/tfmodules/tree/aks-02-2025/aks/aks_spot"
+  source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot?ref=aks-02-2025"
   #20251228# source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot" #?ref=d89454c669724f9ecf7402a5cdc87552758d6ed0"
   #INFO previous, no private ip version: 
   # source = "git::https://github.com/Xaprun/tfmodules.git//aks/aks_spot?ref=2db8acc04a4a250cd84b9c2209cb25a102be149f"
