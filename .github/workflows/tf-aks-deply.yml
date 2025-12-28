@@ -1,9 +1,9 @@
-name: TF AKS DEPLOY
+name: TF AKS DEPLOY 12-2025
 
 on:
   push:
     branches:
-      - my-artificial-client-03
+      - my-aks-play-12-2025
     paths:
       - 'TF/**' 
 
@@ -12,9 +12,7 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  #azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
-  
-  # Parametry Storage Account dla Terraform State
+
   TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
   TF_CONTAINER_NAME: "tfstate"
   TF_PLAN_CONTAINER_NAME: "tfplan"
@@ -22,9 +20,9 @@ env:
   TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
   TF_STATE_REGION: "westeurope"
 
-  # na rzecz deploymentu TF
-  $AKS_RESOURCE_GROUP: "my-resource-group"
-  $AKS_CLUSTER_NAME: "my-aks-cluster"
+  AKS_RESOURCE_GROUP: "my-resource-group"
+  AKS_CLUSTER_NAME: "my-aks-cluster"
+
 
 jobs:
   call_tf_testing:
@@ -39,7 +37,7 @@ jobs:
 
     steps:
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
 
@@ -119,11 +117,16 @@ jobs:
       - name: Dir test
         run: pwd && ls -al ./TF
 
-      - name: Initialize Terraform with backend & modules
-        run: terraform -chdir=TF init 
+      - name: Initialize Terraform with AzureRM backend
+        run: |
+          terraform -chdir=TF init \
+            -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_STORAGE_ACCOUNT_NAME}" \
+            -backend-config="container_name=${TF_CONTAINER_NAME}" \
+            -backend-config="key=${TF_STATE_KEY}"
 
       - name: Terraform Plan 
-        run: terraform -chdir=TF plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="terraform.tfvars"
+        run: terraform -chdir=TF plan -out=plan.tfplan -var="azure_credentials=${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}" -var-file="dev.tfvars" 
 
       - name: Sprawdzenie czy plan się utworzył
         run: |
@@ -140,8 +143,8 @@ jobs:
             --overwrite
 
       - name: Terraform Apply
-        run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
-        
+        run: terraform -chdir=TF apply -auto-approve "plan.tfplan" 
+
       - name: Sprawdzenie katalogu czy statefile istnieje
         run: pwd && ls -al ./TF
 
