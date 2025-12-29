@@ -7,3 +7,4 @@ spec:
     - name: pause
       image: registry.k8s.io/pause:3.9
   restartPolicy: Never
+
