@@ -42,7 +42,7 @@ jobs:
         run: pwd && ls -al && cd k8s && ls -al
   
       - name: Deploy smoke pod
-        run: kubectl apply -f k8s/smoke-pod.yaml
+        run: kubectl apply -f k8s/smoke-pod.yml
   
       - name: Wait for pod to be Ready
         run: |
