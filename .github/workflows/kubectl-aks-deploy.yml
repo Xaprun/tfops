@@ -39,7 +39,7 @@ jobs:
             --overwrite-existing
 
       - name: Sprawdzenie katalogu - czy action istnieje ?
-        run: pwd && ls -al
+        run: pwd && ls -al && cd k8s && ls -al
   
       - name: Deploy smoke pod
         run: kubectl apply -f k8s/smoke-pod.yaml
