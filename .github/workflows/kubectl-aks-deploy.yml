@@ -30,8 +30,9 @@ jobs:
         run: |
           curl -LO https://github.com/Azure/kubelogin/releases/latest/download/kubelogin-linux-amd64.zip
           unzip kubelogin-linux-amd64.zip
-          sudo mv kubelogin /usr/local/bin/kubelogin
-          kubelogin --version
+          sudo mv bin/linux_amd64/kubelogin /usr/local/bin/kubelogin
+          sudo chmod +x /usr/local/bin/kubelogin
+          kubelogin --version  
 
       - name: Login to Azure
         uses: azure/login@v1
