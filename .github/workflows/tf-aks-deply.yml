@@ -1,0 +1,176 @@
+name: TF AKS DEPLOY 12-2025
+
+on:
+  push:
+    branches:
+      - my-aks-play-12-2025
+    paths:
+      - 'TF/**' 
+
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  #azure_credentials: ${{ secrets.JSON_CREDENTIALS_AZURE_ITSAJ_AUT }}
+  
+  # Parametry Storage Account dla Terraform State
+  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
+  TF_CONTAINER_NAME: "tfstate"
+  TF_PLAN_CONTAINER_NAME: "tfplan"
+  TF_STATE_KEY: "dev.tfstate"
+  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
+  TF_STATE_REGION: "westeurope"
+
+  # na rzecz deploymentu TF
+  $AKS_RESOURCE_GROUP: "my-resource-group"
+  $AKS_CLUSTER_NAME: "my-aks-cluster"
+
+jobs:
+  # TEMPORARY MOCKED, NO REMOVE !
+  # call_tf_testing:
+  #   uses: xaprun/terraform-ci-cd/.github/workflows/tf-scan-bundle.yml@main
+  #   with:
+  #     branch: main
+  #     path: TF/
+
+  # prepare-tf-backend-storage:
+  #   name: Prepare Azure Storage
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Login to Azure
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+  #     - name: Sprawdzenie istnienia Resource Group
+  #       run: |
+  #         if ! az group show --name $TF_STATE_RESOURCE_GROUP &>/dev/null; then
+  #           echo "Resource Group nie istnieje. Tworzę RG: $TF_STATE_RESOURCE_GROUP"
+  #           az group create --name $TF_STATE_RESOURCE_GROUP --location $TF_STATE_REGION
+  #         else
+  #           echo "Resource Group już istnieje."
+  #         fi
+
+  #     - name: Sprawdzenie istnienia Storage Account
+  #       run: |
+  #         if ! az storage account show --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP &>/dev/null; then
+  #           echo "Storage Account nie istnieje. Tworzę Storage Account: $TF_STORAGE_ACCOUNT_NAME"
+  #           az storage account create \
+  #             --name $TF_STORAGE_ACCOUNT_NAME \
+  #             --resource-group $TF_STATE_RESOURCE_GROUP \
+  #             --location $TF_STATE_REGION \
+  #             --sku Standard_LRS
+  #         else
+  #           echo "Storage Account już istnieje."
+  #         fi
+
+  #     - name: Sprawdzenie istnienia Blob Container dla PLAN
+  #       run: |
+  #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+  #         if ! az storage container show --name "$TF_PLAN_CONTAINER_NAME" &>/dev/null; then
+  #           echo "Blob Container nie istnieje. Tworzę Blob Container: $TF_PLAN_CONTAINER_NAME"
+  #           az storage container create --name "$TF_PLAN_CONTAINER_NAME"
+  #         else
+  #           echo "Blob Container już istnieje."
+  #         fi
+
+  #     - name: Sprawdzenie istnienia Blob Container dla STAN
+  #       run: |
+  #         export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+  #         if ! az storage container show --name "$TF_CONTAINER_NAME" &>/dev/null; then
+  #           echo "Blob Container nie istnieje. Tworzę Blob Container: $TF_CONTAINER_NAME"
+  #           az storage container create --name "$TF_CONTAINER_NAME"
+  #         else
+  #           echo "Blob Container już istnieje."
+  #         fi
+
+  #     - name: Save Storage Info
+  #       run: echo "TF_STORAGE_ACCOUNT_NAME=${TF_STORAGE_ACCOUNT_NAME}" >> $GITHUB_ENV
+
+  terraform-deploy:
+    name: Terraform Apply Task
+    runs-on: ubuntu-latest
+    # TEMPORARY MOCKED, NO REMOVE !
+    # needs: prepare-tf-backend-storage 
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+      - name: Check if state file exists
+        id: check_state
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+          EXISTS=$(az storage blob exists --container-name "$TF_CONTAINER_NAME" --name "$TF_STATE_KEY" \
+            --connection-string "$AZURE_STORAGE_CONNECTION_STRING" --query exists -o tsv)
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+      
+      - name: Dir test
+        run: pwd && ls -al ./TF
+
+      - name: Terraform Init (remote backend)
+        run: |
+          terraform -chdir=TF init \
+            -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${TF_STORAGE_ACCOUNT_NAME}" \
+            -backend-config="container_name=${TF_CONTAINER_NAME}" \
+            -backend-config="key=${TF_STATE_KEY}"
+
+
+      - name: Terraform Plan 
+        run: terraform -chdir=TF plan -out=plan.tfplan -var-file="dev.tfvars"
+
+      - name: Sprawdzenie czy plan się utworzył
+        run: |
+          pwd && ls -al ./TF
+        
+      - name: Upload Plan to Azure Blob Storage
+        run: |
+          cd TF
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $TF_STORAGE_ACCOUNT_NAME --resource-group $TF_STATE_RESOURCE_GROUP -o tsv)
+          az storage blob upload \
+            --container-name "$TF_PLAN_CONTAINER_NAME" \
+            --file "plan.tfplan" \
+            --name "plan-$(date +%Y%m%d-%H%M%S).tfplan" \
+            --overwrite
+
+      - name: Terraform Apply
+        run: terraform -chdir=TF apply -auto-approve "plan.tfplan"
+       # continue-on-error: true
+
+      # - name: Cleanup on failure
+      #   if: steps.apply.outcome == 'failure'
+      #   run: |
+      #       echo "Apply failed – cleaning up RG"
+      #       az group delete \
+      #         --name rg-aks-dev-neu-* \
+      #         --yes \
+      #         --no-wait
+        
+      - name: Sprawdzenie katalogu czy statefile istnieje
+        run: pwd && ls -al ./TF
+
+  # deploy-k8s-manifest:
+  #   name: Deploy Kubernetes Manifest
+  #   runs-on: ubuntu-latest
+  #   needs: terraform-deploy
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
+        
+  #     - name: Sprawdzenie katalogu - czy action istnieje ?
+  #       run: pwd && ls -al
