@@ -25,18 +25,29 @@ jobs:
     # needs: terraform-deploy 
     steps:
       - uses: actions/checkout@v3
-  
+      
+      - name: Install kubelogin
+        run: |
+          curl -LO https://github.com/Azure/kubelogin/releases/latest/download/kubelogin-linux-amd64.zip
+          unzip kubelogin-linux-amd64.zip
+          sudo mv kubelogin /usr/local/bin/kubelogin
+          kubelogin --version
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
-  
+
       - name: Get AKS credentials
         run: |
           az aks get-credentials \
             --resource-group rg-aks-dev-sc-02 \
             --name aks-dev-sc-02 \
             --overwrite-existing
+
+      - name: Convert kubeconfig for SP login
+        run: |
+          kubelogin convert-kubeconfig -l azurecli
 
       - name: Sprawdzenie katalogu - czy action istnieje ?
         run: pwd && ls -al && cd k8s && ls -al
