@@ -1,6 +1,7 @@
 name: TF AKS DEPLOY 12-2025
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - my-aks-play-12-2025
