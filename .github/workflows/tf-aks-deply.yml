@@ -25,8 +25,8 @@ env:
   TF_STATE_REGION: "westeurope"
 
   # na rzecz deploymentu TF
-  $AKS_RESOURCE_GROUP: "my-resource-group"
-  $AKS_CLUSTER_NAME: "my-aks-cluster"
+  # $AKS_RESOURCE_GROUP: "my-resource-group"
+  # $AKS_CLUSTER_NAME: "my-aks-cluster"
 
 jobs:
   # TEMPORARY MOCKED, NO REMOVE !
