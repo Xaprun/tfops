@@ -1,10 +1,10 @@
 location = "Sweden Central" 
 
-resource_group_name = "rg-aks-dev-sc-01"
-aks_cluster_name    = "aks-dev-sc-01"
+resource_group_name = "rg-aks-dev-sc-02"
+aks_cluster_name    = "aks-dev-sc-02"
 
-vnet_name   = "vnet-aks-dev-sc-01"
-subnet_name = "snet-aks-dev-sc-01"
+vnet_name   = "vnet-aks-dev-sc-02"
+subnet_name = "snet-aks-dev-sc-02"
 
 environment = "dev"
 
