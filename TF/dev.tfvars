@@ -1,7 +1,8 @@
-location = "Sweden Central"
+location = "Sweden Central" 
 
 resource_group_name = "rg-aks-dev-sc-01"
 aks_cluster_name    = "aks-dev-sc-01"
+
 vnet_name   = "vnet-aks-dev-sc-01"
 subnet_name = "snet-aks-dev-sc-01"
 
