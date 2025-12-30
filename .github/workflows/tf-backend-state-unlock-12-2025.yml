@@ -22,17 +22,10 @@ env:
 
 jobs:
   unlock:
-    name: Terraform Destroy
+    name: Terraform Unlock
     runs-on: ubuntu-latest
 
     steps:
-      - name: Validate confirmation
-        run: |
-          if [ "${{ inputs.confirm_destroy }}" != "DESTROY" ]; then
-            echo "❌ Destroy not confirmed. Type DESTROY to proceed."
-            exit 1
-          fi
-
       - name: Checkout code
         uses: actions/checkout@v4
 
