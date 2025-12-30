@@ -1,13 +1,42 @@
+#################################
+# Resource Group
+#################################
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      Module      = "platform"
+    }
+  )
+
+  # Odkomentuj jeśli to NIE jest lab
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
+
+#################################
+# Networking
+#################################
 
 resource "azurerm_virtual_network" "vnet" {
   name                = var.vnet_name
   address_space       = [var.vnet_cidr]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      Module      = "network"
+    }
+  )
 }
 
 resource "azurerm_subnet" "subnet" {
@@ -15,7 +44,15 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = [var.subnet_cidr]
+
+  # AKS / Azure CNI best practices
+  private_endpoint_network_policies             = "Disabled"
+  private_link_service_network_policies_enabled = true
 }
+
+#################################
+# AKS Module
+#################################
 
 module "aks" {
   source = "git::https://github.com/Xaprun/tfmodules.git//aks-v202601?ref=module-aks-observability"
@@ -28,21 +65,21 @@ module "aks" {
   resource_group_name = azurerm_resource_group.rg.name
   vnet_subnet_id      = azurerm_subnet.subnet.id
 
-  dns_prefix          = var.dns_prefix
-  kubernetes_version  = var.kubernetes_version
+  dns_prefix         = var.dns_prefix
+  kubernetes_version = var.kubernetes_version
 
   ####################################
   # API / Access
   ####################################
-  private_cluster_enabled            = var.private_cluster_enabled
-  api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
+  private_cluster_enabled         = var.private_cluster_enabled
+  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
   ####################################
   # Identity / RBAC
   ####################################
-  tenant_id                     = var.tenant_id
-  aad_admin_group_object_ids     = var.aad_admin_group_object_ids
-  local_account_disabled         = var.local_account_disabled
+  tenant_id                 = var.tenant_id
+  aad_admin_group_object_ids = var.aad_admin_group_object_ids
+  local_account_disabled     = var.local_account_disabled
 
   ####################################
   # System Node Pool
@@ -53,7 +90,7 @@ module "aks" {
   system_max_pods       = var.system_max_pods
 
   ####################################
-  # Networking
+  # Networking (AKS)
   ####################################
   network_policy = var.network_policy
   dns_service_ip = var.dns_service_ip
@@ -62,16 +99,16 @@ module "aks" {
   ####################################
   # Additional Node Pool
   ####################################
-  enable_additional_pool               = var.enable_additional_pool
-  additional_pool_mode                 = var.additional_pool_mode
-  additional_pool_name                 = var.additional_pool_name
-  additional_pool_vm_size              = var.additional_pool_vm_size
-  additional_pool_enable_auto_scaling  = var.additional_pool_enable_auto_scaling
-  additional_pool_min_count            = var.additional_pool_min_count
-  additional_pool_max_count            = var.additional_pool_max_count
-  additional_pool_node_count           = var.additional_pool_node_count
-  additional_pool_max_pods             = var.additional_pool_max_pods
-  additional_pool_spot_max_price       = var.additional_pool_spot_max_price
+  enable_additional_pool              = var.enable_additional_pool
+  additional_pool_mode                = var.additional_pool_mode
+  additional_pool_name                = var.additional_pool_name
+  additional_pool_vm_size             = var.additional_pool_vm_size
+  additional_pool_enable_auto_scaling = var.additional_pool_enable_auto_scaling
+  additional_pool_min_count           = var.additional_pool_min_count
+  additional_pool_max_count           = var.additional_pool_max_count
+  additional_pool_node_count          = var.additional_pool_node_count
+  additional_pool_max_pods            = var.additional_pool_max_pods
+  additional_pool_spot_max_price      = var.additional_pool_spot_max_price
 
   ####################################
   # Observability
@@ -84,4 +121,12 @@ module "aks" {
   ####################################
   tags        = var.tags
   environment = var.environment
+
+  ####################################
+  # Stability (Azure API quirks)
+  ####################################
+  depends_on = [
+    azurerm_resource_group.rg,
+    azurerm_subnet.subnet
+  ]
 }
