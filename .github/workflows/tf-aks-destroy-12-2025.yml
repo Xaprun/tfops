@@ -43,7 +43,10 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.4.6
-
+          
+      - name: UNLOCK PLAN (FIX BROKEN PIPELINE)
+        run:  terraform -chdir=TF force-unlock ed5e2475-1f04-f417-34ef-411febe20a55
+        
       - name: Terraform Init (remote backend)
         run: |
           terraform -chdir=TF init \
