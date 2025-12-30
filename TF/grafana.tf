@@ -16,3 +16,12 @@ resource "azurerm_role_assignment" "grafana_monitor_reader" {
   principal_id         = azurerm_dashboard_grafana.this.identity[0].principal_id
 }
 
+variable "enable_managed_grafana" {
+  type    = bool
+  default = true
+}
+
+variable "grafana_name" {
+  type    = string
+  default = null
+}
