@@ -18,7 +18,7 @@ resource "azurerm_subnet" "subnet" {
 }
 
 module "aks" {
-  source = "git::https://github.com/Xaprun/tfmodules.git//aks-v202512?ref=dev-aks"
+  source = "git::https://github.com/Xaprun/tfmodules.git//aks-v202601?ref=dev-aks-observability"
 
   aks_cluster_name      = var.aks_cluster_name
   location              = azurerm_resource_group.rg.location
