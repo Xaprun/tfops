@@ -25,3 +25,8 @@ variable "grafana_name" {
   type    = string
   default = null
 }
+
+output "grafana_url" {
+  description = "Public URL of Azure Managed Grafana"
+  value       = azurerm_dashboard_grafana.this.endpoint
+}
