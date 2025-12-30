@@ -2,14 +2,7 @@
 # Azure Managed Grafana (ROOT)
 # -----------------------------
 
-terraform {
-  required_providers {
-    time = {
-      source  = "hashicorp/time"
-      version = ">= 0.11.0"
-    }
-  }
-}
+
 
 locals {
   grafana_name_final = coalesce(var.grafana_name, "${var.aks_cluster_name}-grafana")
