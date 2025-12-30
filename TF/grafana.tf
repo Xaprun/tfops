@@ -1,6 +1,14 @@
-# Azure Managed Grafana
+# -----------------------------
+# Azure Managed Grafana (ROOT)
+# -----------------------------
+
 locals {
-  tags_common = merge(
+  grafana_name_final = coalesce(
+    var.grafana_name,
+    "${var.aks_cluster_name}-grafana"
+  )
+
+  grafana_tags = merge(
     var.tags,
     {
       Environment = var.environment
@@ -12,7 +20,8 @@ locals {
 data "azurerm_subscription" "current" {}
 
 resource "azurerm_dashboard_grafana" "this" {
-  name                = var.grafana_name
+  count               = var.enable_managed_grafana ? 1 : 0
+  name                = local.grafana_name_final
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -22,28 +31,38 @@ resource "azurerm_dashboard_grafana" "this" {
     type = "SystemAssigned"
   }
 
-  tags = local.tags_common
+  tags = local.grafana_tags
 }
 
-
-# RBAC dla Grafany (MUSI BYĆ)
+# RBAC – REQUIRED
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
+  count                = var.enable_managed_grafana ? 1 : 0
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Monitoring Reader"
-  principal_id         = azurerm_dashboard_grafana.this.identity[0].principal_id
+  principal_id         = azurerm_dashboard_grafana.this[0].identity[0].principal_id
 }
 
+# -----------------------------
+# Variables
+# -----------------------------
+
 variable "enable_managed_grafana" {
-  type    = bool
-  default = true
+  description = "Enable Azure Managed Grafana"
+  type        = bool
+  default     = true
 }
 
 variable "grafana_name" {
-  type    = string
-  default = null
+  description = "Optional custom name for Grafana"
+  type        = string
+  default     = null
 }
+
+# -----------------------------
+# Outputs
+# -----------------------------
 
 output "grafana_url" {
   description = "Public URL of Azure Managed Grafana"
-  value       = azurerm_dashboard_grafana.this.endpoint
+  value       = var.enable_managed_grafana ? azurerm_dashboard_grafana.this[0].endpoint : null
 }
