@@ -112,5 +112,8 @@ variable "aad_admin_group_object_ids" {
   description = "AAD group object IDs for AKS admins"
   default     = null
 }
-
-
+# w związku z dodaniem RBAC dla SP over AKS cluster
+variable "aks_ci_sp_object_id" {
+  type        = string
+  description = "CI Service Principal Object ID"
+}
