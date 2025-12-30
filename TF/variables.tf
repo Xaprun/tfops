@@ -1,14 +1,10 @@
+#################################
+# Global
+#################################
+
 variable "location" {
   type    = string
   default = "North Europe"
-}
-
-variable "resource_group_name" {
-  type = string
-}
-
-variable "aks_cluster_name" {
-  type = string
 }
 
 variable "environment" {
@@ -21,9 +17,26 @@ variable "tags" {
   default = {}
 }
 
-# Networking
-variable "vnet_name"   { type = string }
-variable "subnet_name" { type = string }
+#################################
+# Resource Group
+#################################
+
+variable "resource_group_name" {
+  type        = string
+  description = "Name of the resource group for AKS and supporting resources"
+}
+
+#################################
+# Networking (owned by root)
+#################################
+
+variable "vnet_name" {
+  type = string
+}
+
+variable "subnet_name" {
+  type = string
+}
 
 variable "vnet_cidr" {
   type    = string
@@ -35,7 +48,87 @@ variable "subnet_cidr" {
   default = "10.10.1.0/24"
 }
 
-# AKS sizing
+variable "dns_service_ip" {
+  type    = string
+  default = "10.1.0.10"
+}
+
+variable "service_cidr" {
+  type    = string
+  default = "10.1.0.0/16"
+}
+
+variable "network_policy" {
+  type    = string
+  default = "azure"
+}
+
+#################################
+# AKS Core
+#################################
+
+variable "aks_cluster_name" {
+  type = string
+}
+
+variable "dns_prefix" {
+  type    = string
+  default = null
+}
+
+variable "kubernetes_version" {
+  type    = string
+  default = null
+}
+
+variable "private_cluster_enabled" {
+  type    = bool
+  default = false
+}
+
+#################################
+# API access
+#################################
+
+variable "api_server_authorized_ip_ranges" {
+  type    = list(string)
+  default = null
+  description = "Public IP/CIDR allowed to access AKS API (null = unrestricted)"
+}
+
+#################################
+# Identity / RBAC
+#################################
+
+variable "tenant_id" {
+  type    = string
+  default = null
+}
+
+variable "aad_admin_group_object_ids" {
+  type    = list(string)
+  default = null
+}
+
+variable "local_account_disabled" {
+  type    = bool
+  default = false
+}
+
+variable "aks_ci_sp_object_id" {
+  type        = string
+  description = "Object ID of CI Service Principal used for AKS access"
+}
+
+#################################
+# System Node Pool
+#################################
+
+variable "system_node_pool_name" {
+  type    = string
+  default = "system"
+}
+
 variable "node_count" {
   type    = number
   default = 1
@@ -46,20 +139,15 @@ variable "node_vm_size" {
   default = "Standard_DS2_v2"
 }
 
-# Uwaga: to ma być PUBLICZNY CIDR/IP Twojego klienta, nie prywatne 10.x/192.168.x.
-# null = brak ograniczenia. (Najbezpieczniej na start: null)
-variable "api_server_authorized_ip_ranges" {
-  type    = list(string)
-  default = null
+variable "system_max_pods" {
+  type    = number
+  default = 110
 }
 
-# Monitoring
-variable "enable_oms_agent" {
-  type    = bool
-  default = true
-}
+#################################
+# Additional Node Pool
+#################################
 
-# Extra pool
 variable "enable_additional_pool" {
   type    = bool
   default = false
@@ -80,6 +168,11 @@ variable "additional_pool_vm_size" {
   default = "Standard_DS2_v2"
 }
 
+variable "additional_pool_node_count" {
+  type    = number
+  default = 1
+}
+
 variable "additional_pool_enable_auto_scaling" {
   type    = bool
   default = true
@@ -94,26 +187,27 @@ variable "additional_pool_max_count" {
   type    = number
   default = 5
 }
-# fix warnings
-variable "tenant_id" {
-  type        = string
-  description = "Tenant ID for AKS AAD integration"
-  default     = null
+
+variable "additional_pool_max_pods" {
+  type    = number
+  default = 110
 }
 
-variable "local_account_disabled" {
-  type        = bool
-  description = "Disable local AKS admin account"
-  default     = false
+variable "additional_pool_spot_max_price" {
+  type    = number
+  default = -1
 }
 
-variable "aad_admin_group_object_ids" {
-  type        = list(string)
-  description = "AAD group object IDs for AKS admins"
-  default     = null
+#################################
+# Observability
+#################################
+
+variable "enable_oms_agent" {
+  type    = bool
+  default = true
 }
-# w związku z dodaniem RBAC dla SP over AKS cluster
-variable "aks_ci_sp_object_id" {
-  type        = string
-  description = "CI Service Principal Object ID"
+
+variable "enable_managed_prometheus" {
+  type    = bool
+  default = true
 }
