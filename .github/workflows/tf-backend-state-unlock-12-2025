@@ -1,0 +1,24 @@
+name: TF STATE UNLOCK (EMERGENCY)
+
+on:
+  workflow_dispatch:
+    inputs:
+      lock_id:
+        description: "Terraform state lock ID"
+        required: true
+
+jobs:
+  unlock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: hashicorp/setup-terraform@v2
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+      - name: Force unlock state
+        run: |
+          echo "yes" | terraform -chdir=TF force-unlock "${{ github.event.inputs.lock_id }}"
