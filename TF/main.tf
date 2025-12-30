@@ -47,6 +47,8 @@ module "aks" {
 
   tags        = var.tags
   environment = var.environment
+
+  aks_ci_sp_object_id = var.aks_ci_sp_object_id
 }
 
 
