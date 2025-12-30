@@ -32,29 +32,21 @@ resource "azurerm_dashboard_grafana" "this" {
   }
 
   tags = local.grafana_tags
-
-  depends_on = [
-    azurerm_resource_group.rg
-  ]
 }
 
-# RBAC – REQUIRED
+# ------------------------------------------------
+# RBAC – REQUIRED (subscription-level, NOT AKS)
+# ------------------------------------------------
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
   count                = var.enable_managed_grafana ? 1 : 0
-  # scope                = data.azurerm_subscription.current.id
-  scope = module.aks.aks_id
+  scope                = data.azurerm_subscription.current.id
   role_definition_name = "Monitoring Reader"
-  principal_id         = azurerm_dashboard_grafana.this[0].identity[0].principal_id
-
-  depends_on = [
-    azurerm_dashboard_grafana.this
-  ]
+  principal_id         = azurerm_dashboard_grafana.this[count.index].identity[0].principal_id
 }
 
 # -----------------------------
 # Variables
 # -----------------------------
-
 variable "enable_managed_grafana" {
   description = "Enable Azure Managed Grafana"
   type        = bool
@@ -70,8 +62,12 @@ variable "grafana_name" {
 # -----------------------------
 # Outputs
 # -----------------------------
-
 output "grafana_url" {
   description = "Public URL of Azure Managed Grafana"
   value       = var.enable_managed_grafana ? azurerm_dashboard_grafana.this[0].endpoint : null
+}
+
+output "grafana_id" {
+  description = "Resource ID of Azure Managed Grafana"
+  value       = var.enable_managed_grafana ? azurerm_dashboard_grafana.this[0].id : null
 }
