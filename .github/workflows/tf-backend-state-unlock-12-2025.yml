@@ -44,7 +44,7 @@ jobs:
 
       - name: Force unlock state
         run: |
-          echo "yes" | terraform -chdir=TF force-unlock "${{ github.event.inputs.lock_id }}"
+          echo "yes" | terraform -chdir=TF force-unlock  -force "${{ github.event.inputs.lock_id }}"
 
 
 
