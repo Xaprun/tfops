@@ -9,7 +9,7 @@ locals {
   )
 }
 
-
+data "azurerm_subscription" "current" {}
 
 resource "azurerm_dashboard_grafana" "this" {
   name                = var.grafana_name
