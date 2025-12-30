@@ -1,10 +1,13 @@
-location = "Sweden Central" 
+location = "swedencentral"
 
 resource_group_name = "rg-aks-dev-sc-02"
 aks_cluster_name    = "aks-dev-sc-02"
 
 vnet_name   = "vnet-aks-dev-sc-02"
 subnet_name = "snet-aks-dev-sc-02"
+
+vnet_cidr   = "10.10.0.0/16"
+subnet_cidr = "10.10.1.0/24"
 
 environment = "dev"
 
@@ -15,6 +18,9 @@ node_count   = 1
 node_vm_size = "Standard_B4ms"
 
 enable_additional_pool = false
+
+enable_oms_agent           = true
+enable_managed_prometheus  = true
 
 tags = {
   Owner = "itsaj"
