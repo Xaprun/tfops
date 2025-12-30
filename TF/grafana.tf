@@ -15,7 +15,7 @@ locals {
 
 # (Opcjonalnie, ale pomaga gdy subskrypcja nie ma zarejestrowanego RP)
 # Jeśli nie chcesz dotykać rejestracji z TF – zrób to w pipeline az CLI.
-# resource "azurerm_resource_provider_registration" "dashboard" {
+# resource "azurerm_resource_er_registration" "dashboard" {
 #  count = var.enable_managed_grafana ? 1 : 0
 #  name  = "Microsoft.Dashboard"
 #}
@@ -45,7 +45,7 @@ resource "azurerm_dashboard_grafana" "this" {
 
   depends_on = [
     time_sleep.wait_for_rg,
-    azurerm_resource_provider_registration.dashboard
+    # azurerm_resource_provider_registration.dashboard
   ]
 }
 
