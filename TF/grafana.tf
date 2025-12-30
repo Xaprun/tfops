@@ -1,4 +1,16 @@
 # Azure Managed Grafana
+locals {
+  tags_common = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      Module      = "grafana"
+    }
+  )
+}
+
+
+
 resource "azurerm_dashboard_grafana" "this" {
   name                = var.grafana_name
   location            = var.location
