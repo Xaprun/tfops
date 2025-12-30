@@ -1,13 +1,18 @@
 # Azure Managed Grafana
 resource "azurerm_dashboard_grafana" "this" {
-  name                = coalesce(var.grafana_name, "${var.aks_cluster_name}-grafana")
-  resource_group_name = var.resource_group_name
+  name                = var.grafana_name
   location            = var.location
+  resource_group_name = var.resource_group_name
+
+  grafana_major_version = 10
 
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags_common
 }
+
 
 # RBAC dla Grafany (MUSI BYĆ)
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
