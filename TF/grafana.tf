@@ -15,10 +15,10 @@ locals {
 
 # (Opcjonalnie, ale pomaga gdy subskrypcja nie ma zarejestrowanego RP)
 # Jeśli nie chcesz dotykać rejestracji z TF – zrób to w pipeline az CLI.
-resource "azurerm_resource_provider_registration" "dashboard" {
-  count = var.enable_managed_grafana ? 1 : 0
-  name  = "Microsoft.Dashboard"
-}
+# resource "azurerm_resource_provider_registration" "dashboard" {
+#  count = var.enable_managed_grafana ? 1 : 0
+#  name  = "Microsoft.Dashboard"
+#}
 
 # (BARDZO praktyczne) odczekaj chwilę po utworzeniu RG – usuwa 404 na świeżym RG
 resource "time_sleep" "wait_for_rg" {
