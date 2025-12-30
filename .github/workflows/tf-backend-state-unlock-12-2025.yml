@@ -1,53 +1,105 @@
-# f-backend-state-unlock-12-2025.yml
 name: TF STATE UNLOCK (EMERGENCY)
 
 on:
   workflow_dispatch:
     inputs:
-      lock_id:
-        description: "Terraform state lock ID"
+      state_key:
+        description: "Terraform state blob name (e.g. dev.tfstate)"
         required: true
+      lock_id:
+        description: "Terraform lock ID (optional, use if known)"
+        required: false
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  # uzywane przy RABC z modułu TF 
-  TF_VAR_aks_ci_sp_object_id: ${{ secrets.AZURE_CLIENT_OBIECT_ID }}
 
-  TF_STORAGE_ACCOUNT_NAME: "itsajtfstatestorage"
-  TF_CONTAINER_NAME: "tfstate"
-  TF_STATE_RESOURCE_GROUP: "terraform-state-rg"
+  TF_STORAGE_ACCOUNT_NAME: itsajtfstatestorage
+  TF_CONTAINER_NAME: tfstate
+  TF_STATE_RESOURCE_GROUP: terraform-state-rg
 
 jobs:
   unlock:
-    name: Terraform Unlock
+    name: Emergency Terraform State Unlock
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENTIALS_AZURE_ITSAJ_AUT }}
+
+      # ---------------------------
+      # Diagnose lease state
+      # ---------------------------
+      - name: Check blob lease status
+        id: lease
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name "$TF_STORAGE_ACCOUNT_NAME" \
+            --resource-group "$TF_STATE_RESOURCE_GROUP" \
+            -o tsv)
+
+          STATUS=$(az storage blob show \
+            --container-name "$TF_CONTAINER_NAME" \
+            --name "${{ inputs.state_key }}" \
+            --query "properties.lease.status" \
+            -o tsv)
+
+          echo "Lease status: $STATUS"
+          echo "lease_status=$STATUS" >> $GITHUB_OUTPUT
+
+      # ---------------------------
+      # Break lease if locked
+      # ---------------------------
+      - name: Break blob lease (if locked)
+        if: steps.lease.outputs.lease_status == 'locked'
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name "$TF_STORAGE_ACCOUNT_NAME" \
+            --resource-group "$TF_STATE_RESOURCE_GROUP" \
+            -o tsv)
+
+          echo "Breaking lease on blob ${{ inputs.state_key }}"
+          az storage blob lease break \
+            --container-name "$TF_CONTAINER_NAME" \
+            --blob-name "${{ inputs.state_key }}"
+
+      # ---------------------------
+      # Optional: Terraform force-unlock
+      # ---------------------------
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.4.6
 
-      - name: Terraform Init (remote backend)
+      - name: Terraform init (reconfigure backend)
         run: |
-          terraform -chdir=TF init \
+          terraform -chdir=TF init -reconfigure \
             -backend-config="resource_group_name=${TF_STATE_RESOURCE_GROUP}" \
             -backend-config="storage_account_name=${TF_STORAGE_ACCOUNT_NAME}" \
             -backend-config="container_name=${TF_CONTAINER_NAME}" \
-            -backend-config="key=${{ inputs.environment }}.tfstate"
+            -backend-config="key=${{ inputs.state_key }}"
 
-      - name: Force unlock state
+      - name: Terraform force-unlock (best-effort)
+        if: inputs.lock_id != ''
         run: |
-          echo "yes" | terraform -chdir=TF force-unlock  -force "${{ github.event.inputs.lock_id }}"
+          terraform -chdir=TF force-unlock -force "${{ inputs.lock_id }}" || true
 
+      - name: Final verification
+        run: |
+          export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string \
+            --name "$TF_STORAGE_ACCOUNT_NAME" \
+            --resource-group "$TF_STATE_RESOURCE_GROUP" \
+            -o tsv)
 
-
-
-
-  
+          az storage blob show \
+            --container-name "$TF_CONTAINER_NAME" \
+            --name "${{ inputs.state_key }}" \
+            --query "properties.lease.status"
