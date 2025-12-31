@@ -47,7 +47,13 @@ resource "azurerm_dashboard_grafana" "this" {
     time_sleep.wait_for_rg,
     # azurerm_resource_provider_registration.dashboard
   ]
+
+  azure_monitor_workspace_integrations {
+      resource_id = azurerm_monitor_workspace.amw.id
+    }
 }
+
+
 # -----------------------------
 # RBAC
 # -----------------------------
@@ -83,6 +89,11 @@ resource "azurerm_role_assignment" "grafana_editor_users" {
   principal_id         = each.value
 }
 
+resource "azurerm_role_assignment" "grafana_amw_reader" {
+  scope                = azurerm_monitor_workspace.amw.id
+  role_definition_name = "Monitoring Data Reader"
+  principal_id         = azurerm_dashboard_grafana.this[0].identity[0].principal_id
+}
 
 # -----------------------------
 # Variables
