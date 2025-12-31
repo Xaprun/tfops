@@ -1,3 +1,16 @@
+
+resource "azurerm_monitor_workspace" "amw" {
+  name                = "${var.aks_cluster_name}-amw"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  tags = merge(var.tags, {
+    Environment = var.environment
+    Module      = "monitoring"
+  })
+}
+
+
 # -----------------------------
 # Azure Managed Grafana (ROOT)
 # -----------------------------
