@@ -78,7 +78,8 @@ resource "azurerm_role_assignment" "grafana_editor_users" {
   for_each = toset(var.aad_grafana_editors_group_object_ids)
 
   scope                = azurerm_dashboard_grafana.this[0].id
-  role_definition_name = "Grafana Editor"
+  # role_definition_name = "Grafana Editor"
+  role_definition_name = "Grafana Admin"
   principal_id         = each.value
 }
 
