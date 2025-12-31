@@ -72,7 +72,7 @@ resource "azurerm_role_assignment" "grafana_viewer_users" {
 }
 
 # RBAC -role dla devops
-resource "azurerm_role_assignment" "grafana_viewer_users" {
+resource "azurerm_role_assignment" "grafana_editors_users" {
   scope                = azurerm_dashboard_grafana.this[0].id
   role_definition_name = "Grafana Editor"
   principal_id         = "var.aad_grafana_editors_group_object_ids"
