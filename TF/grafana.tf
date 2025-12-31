@@ -94,6 +94,17 @@ variable "grafana_name" {
   default     = null
 }
 
+#  RBAC groups & roles
+variable "aad_grafana_viewers_group_object_ids" {
+  type    = list(string)
+  default = null
+}
+
+variable "aad_grafana_editors_group_object_ids" {
+  type    = list(string)
+  default = null
+}
+
 # -----------------------------
 # Outputs
 # -----------------------------
