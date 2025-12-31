@@ -29,8 +29,17 @@ tags = {
 
 tenant_id = "74c89afa-5815-4a03-954d-d2fc639c3448"
 
+# aks identity/rbac
 aad_admin_group_object_ids = [
   "f350cc08-29aa-4f3b-92cf-259e16c082a6"
 ]
-
 local_account_disabled = true
+
+
+# grafana identity/rbac
+aad_grafana_viewers_group_object_id = [
+  "f350cc08-29aa-4f3b-92cf-259e16c082a6"
+]
+aad_grafana_editors_group_object_ids" = [
+  "f350cc08-29aa-4f3b-92cf-259e16c082a6"
+]
