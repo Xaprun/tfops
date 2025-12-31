@@ -66,16 +66,20 @@ resource "azurerm_role_assignment" "grafana_monitor_reader" {
 
 # RBAC -role dla userów
 resource "azurerm_role_assignment" "grafana_viewer_users" {
+  for_each = toset(var.aad_grafana_viewers_group_object_ids)
+
   scope                = azurerm_dashboard_grafana.this[0].id
   role_definition_name = "Grafana Viewer"
-  principal_id         = "var.aad_grafana_viewers_group_object_ids"
+  principal_id         = each.value
 }
 
 # RBAC -role dla devops
 resource "azurerm_role_assignment" "grafana_editor_users" {
+  for_each = toset(var.aad_grafana_editors_group_object_ids)
+
   scope                = azurerm_dashboard_grafana.this[0].id
   role_definition_name = "Grafana Editor"
-  principal_id         = "var.aad_grafana_editors_group_object_ids"
+  principal_id         = each.value
 }
 
 
@@ -97,12 +101,12 @@ variable "grafana_name" {
 #  RBAC groups & roles
 variable "aad_grafana_viewers_group_object_ids" {
   type    = list(string)
-  default = null
+  default = []
 }
 
 variable "aad_grafana_editors_group_object_ids" {
   type    = list(string)
-  default = null
+  default = []
 }
 
 # -----------------------------
