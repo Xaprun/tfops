@@ -48,8 +48,10 @@ resource "azurerm_dashboard_grafana" "this" {
     # azurerm_resource_provider_registration.dashboard
   ]
 }
-
-# RBAC – REQUIRED
+# -----------------------------
+# RBAC
+# -----------------------------
+# RBAC – role dla grafany
 resource "azurerm_role_assignment" "grafana_monitor_reader" {
   count = var.enable_managed_grafana ? 1 : 0
 
@@ -61,6 +63,21 @@ resource "azurerm_role_assignment" "grafana_monitor_reader" {
 
   depends_on = [azurerm_dashboard_grafana.this]
 }
+
+# RBAC -role dla userów
+resource "azurerm_role_assignment" "grafana_viewer_users" {
+  scope                = azurerm_dashboard_grafana.this[0].id
+  role_definition_name = "Grafana Viewer"
+  principal_id         = "var.aad_grafana_viewers_group_object_ids"
+}
+
+# RBAC -role dla devops
+resource "azurerm_role_assignment" "grafana_viewer_users" {
+  scope                = azurerm_dashboard_grafana.this[0].id
+  role_definition_name = "Grafana Editor"
+  principal_id         = "var.aad_grafana_editors_group_object_ids"
+}
+
 
 # -----------------------------
 # Variables
