@@ -163,7 +163,7 @@ jobs:
   deploy-smoke-test:
     name: AKS Smoke Test
     runs-on: ubuntu-latest
-    # needs: terraform-deploy 
+    needs: terraform-deploy 
     steps:
       - uses: actions/checkout@v3
       
