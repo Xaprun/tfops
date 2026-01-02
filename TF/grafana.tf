@@ -11,15 +11,10 @@ resource "azurerm_monitor_workspace" "amw" {
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "aks_amw_prometheus" {
-  name                    = "amw-prometheus"
-  target_resource_id      = module.aks.aks_id
+  name               = "amw-prometheus"
+  target_resource_id = module.aks.aks_id
 
-  # Te dwa atrybuty są dostępne w nowszych wersjach providera; jeśli nie są,
-  # zrobisz fallback przez azapi (o tym niżej).
-  data_collection_rule_id     = azurerm_monitor_workspace.amw.default_data_collection_rule_id
-  data_collection_endpoint_id = azurerm_monitor_workspace.amw.default_data_collection_endpoint_id
-
-  description = "Attach AKS managed Prometheus to Azure Monitor Workspace"
+  data_collection_rule_id = azurerm_monitor_workspace.amw.default_data_collection_rule_id
 }
 
 
