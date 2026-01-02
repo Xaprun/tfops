@@ -17,6 +17,14 @@ resource "azurerm_monitor_data_collection_rule_association" "aks_amw_prometheus"
   data_collection_rule_id = azurerm_monitor_workspace.amw.default_data_collection_rule_id
 }
 
+# kubelet identity objectId jako output z modułu aks
+# (albo weź z az aks show identityProfile.kubeletidentity.objectId)
+
+resource "azurerm_role_assignment" "aks_metrics_publisher" {
+  scope                = azurerm_monitor_workspace.amw.default_data_collection_rule_id
+  role_definition_name = "Monitoring Metrics Publisher"
+  principal_id         = module.aks.kubelet_identity_object_id
+}
 
 # -----------------------------
 # Azure Managed Grafana (ROOT)
